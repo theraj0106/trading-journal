@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Trading Journal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  background:#f4f6f8;
+  margin:0;
+}
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:20px;
+}
+.card{
+  background:#fff;
+  padding:16px;
+  border-radius:10px;
+  margin-bottom:16px;
+  border:1px solid #ddd;
+}
+h2,h3{margin:0 0 10px}
+
+/* ---------- LAYOUT ---------- */
+.trade-layout{
+  display:flex;
+  gap:20px;
+}
+.trade-form,
+.trade-chart{
+  width:50%;
+}
+
+/* ---------- INPUTS ---------- */
+label{
+  font-size:13px;
+  color:#555;
+  display:block;
+  margin-bottom:4px;
+}
+input{
+  padding:6px 8px;
+  font-size:13px;
+  border-radius:6px;
+  border:1px solid #d1d5db;
+}
+
+.input-row{
+  display:flex;
+  gap:12px;
+  align-items:flex-end;
+}
+.input-group{
+  display:flex;
+  flex-direction:column;
+}
+.date-input{width:160px}
+.pnl-input{width:120px}
+
+/* ---------- CHECKBOXES ---------- */
+.rules{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  margin-top:6px;
+}
+.rules label{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:12.5px;
+  background:#f9fafb;
+  padding:6px 8px;
+  border-radius:6px;
+  border:1px solid #e5e7eb;
+  cursor:pointer;
+}
+.rules input{
+  width:13px;
+  height:13px;
+  margin:0;
+}
+
+/* ---------- BUTTONS ---------- */
+button{
+  padding:7px 14px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:13px;
+}
+.save{background:#2563eb;color:#fff}
+.export{background:#374151;color:#fff;margin-left:8px}
+
+/* ---------- SUMMARY ---------- */
+.summary{
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+}
+.summary span{
+  font-size:16px;
+  font-weight:bold;
+}
+
+/* ---------- CALENDAR ---------- */
+.calendar{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:8px;
+}
+.day-header{
+  text-align:center;
+  font-size:12px;
+  color:#666;
+}
+.day{
+  min-height:68px;
+  padding:6px;
+  border-radius:6px;
+  font-size:12px;
+  cursor:pointer;
+}
+.green{background:#e6f7ec;color:#166534}
+.red{background:#fdecec;color:#991b1b}
+.neutral{background:#f1f5f9;color:#555}
+
+/* ---------- TABLE ---------- */
+.hidden{display:none}
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+th,td{
+  border-bottom:1px solid #ddd;
+  padding:8px;
+  font-size:13px;
+  text-align:left;
+}
+th{background:#f8fafc}
+.pnl-col{width:120px;font-weight:bold}
+
+/* ---------- PIE ---------- */
+.trade-chart h3{
+  font-size:15px;
+  color:#374151;
+  margin-bottom:8px;
+}
+
+/* ---- PIE SIZE CONTROL ---- */
+.pie-wrapper{
+  width:100%;
+  max-width:260px;        /* controls width */
+  height:260px;           /* controls height */
+  margin:auto;
+}
+
+.trade-chart canvas{
+  width:100% !important;
+  height:100% !important;
+}
+
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<!-- ADD TRADE + PIE -->
+<div class="card">
+<h2>Add Trade</h2>
+
+<div class="trade-layout">
+
+  <!-- LEFT 50% -->
+  <div class="trade-form">
+
+    <div class="input-row">
+      <div class="input-group">
+        <label>Date</label>
+        <input type="date" id="date" class="date-input">
+      </div>
+
+      <div class="input-group">
+        <label>PnL</label>
+        <input type="number" id="pnl" class="pnl-input" placeholder="+ / -">
+      </div>
+    </div>
+
+    <label style="margin-top:10px">Mistakes</label>
+    <div class="rules">
+      <label><input type="checkbox" value="No Stop Loss"> No Stop Loss</label>
+      <label><input type="checkbox" value="Overtrading"> Overtrading</label>
+      <label><input type="checkbox" value="FOMO Entry"> FOMO Entry</label>
+      <label><input type="checkbox" value="Free Channel"> Free Channel</label>
+      <label><input type="checkbox" value="Self Trade"> Self Trade</label>
+      <label><input type="checkbox" value="No Mistakes"> No Mistakes</label>
+    </div>
+
+    <div style="margin-top:12px">
+      <button class="save" onclick="saveTrade()">Save</button>
+      <button class="export" onclick="exportCSV()">Export</button>
+    </div>
+
+  </div>
+
+  <!-- RIGHT 50% -->
+  <div class="trade-chart">
+    <h3>Profit &amp; Loss Distribution</h3>
+   <div class="pie-wrapper">
+  <canvas id="lossPie"></canvas>
+</div>
+  </div>
+
+</div>
+</div>
+
+<!-- SUMMARY -->
+<div class="card">
+<h2>Summary</h2>
+<div class="summary">
+  <div>Total Profit<br><span id="profit" style="color:green">₹0</span></div>
+  <div>Total Loss<br><span id="loss" style="color:red">₹0</span></div>
+  <div>Net P&amp;L<br><span id="net">₹0</span></div>
+</div>
+</div>
+
+<!-- CALENDAR -->
+<div class="card">
+<h2>📅 Calendar</h2>
+<div class="calendar" id="calendar"></div>
+</div>
+
+<!-- DRILL -->
+<div class="card hidden" id="drill">
+<h3 id="drillTitle"></h3>
+<table>
+<thead>
+<tr><th class="pnl-col">PnL</th><th>Mistakes</th></tr>
+</thead>
+<tbody id="drillBody"></tbody>
+</table>
+</div>
+
+</div>
+
+<script>
+let db, lossChart;
+
+/* DB */
+const req=indexedDB.open("TradeJournalDB",1);
+req.onupgradeneeded=e=>{
+  e.target.result.createObjectStore("trades",{keyPath:"id",autoIncrement:true});
+};
+req.onsuccess=e=>{
+  db=e.target.result;
+  loadAll();
+};
+
+/* SAVE */
+function saveTrade() {
+  const dateValue = document.getElementById("date").value;
+  const pnlValue  = Number(document.getElementById("pnl").value);
+
+  if (!dateValue || pnlValue === 0) {
+    alert("Date & PnL required");
+    return;
+  }
+
+  // 🔒 HARD COLLECTION (no assumptions)
+  const ruleNodes = document.querySelectorAll(".rules input[type=checkbox]");
+  const rules = [];
+
+  ruleNodes.forEach(cb => {
+    if (cb.checked) {
+      rules.push(cb.value);
+    }
+  });
+
+  const trade = {
+    date: dateValue,
+    pnl: pnlValue,
+    rules: rules   // 👈 ALWAYS SAVED AS-IS
+  };
+
+  console.log("✅ SAVED TRADE:", trade);
+
+  const tx = db.transaction("trades", "readwrite");
+  tx.objectStore("trades").add(trade);
+
+  tx.oncomplete = () => {
+    clearForm();
+    loadAll();
+  };
+}
+
+/* LOAD */
+function loadAll(){
+  db.transaction("trades","readonly")
+    .objectStore("trades").getAll().onsuccess=e=>{
+      const t=e.target.result;
+      updateSummary(t);
+      buildCalendar(t);
+      buildLossPie(t);
+    };
+}
+
+/* SUMMARY */
+function updateSummary(t){
+  let p=0,l=0;
+  t.forEach(x=>{if(x.pnl>0)p+=x.pnl;if(x.pnl<0)l+=Math.abs(x.pnl);});
+  profit.innerText="₹"+p;
+  loss.innerText="₹"+l;
+  net.innerText="₹"+(p-l);
+}
+
+/* CALENDAR */
+function buildCalendar(t){
+  calendar.innerHTML="";
+  const d=new Date(),y=d.getFullYear(),m=d.getMonth();
+  const first=new Date(y,m,1).getDay()||7;
+  const days=new Date(y,m+1,0).getDate();
+  const map={};
+  t.forEach(x=>map[x.date]=(map[x.date]||[]).concat(x));
+  ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].forEach(h=>calendar.innerHTML+=`<div class="day-header">${h}</div>`);
+  for(let i=1;i<first;i++)calendar.innerHTML+=`<div></div>`;
+  for(let i=1;i<=days;i++){
+    const ds=`${y}-${String(m+1).padStart(2,"0")}-${String(i).padStart(2,"0")}`;
+    const list=map[ds]||[];
+    let pnl=list.reduce((s,x)=>s+x.pnl,0);
+    calendar.innerHTML+=`
+      <div class="day ${pnl>0?"green":pnl<0?"red":"neutral"}" onclick="openDay('${ds}')">
+        <b>${i}</b><br>${list.length?`₹${pnl}<br>${list.length} trades`:"No Trades"}
+      </div>`;
+  }
+}
+
+/* DRILL */
+function openDay(selectedDate) {
+  const drill = document.getElementById("drill");
+  const drillTitle = document.getElementById("drillTitle");
+  const drillBody = document.getElementById("drillBody");
+
+  drill.classList.remove("hidden");
+  drillTitle.innerText = "Trades on " + selectedDate;
+  drillBody.innerHTML = "";
+
+  const tx = db.transaction("trades", "readonly");
+  const store = tx.objectStore("trades");
+  const req = store.getAll();
+
+  req.onsuccess = () => {
+    req.result
+      .filter(t => t.date === selectedDate)
+      .forEach(t => {
+
+        console.log("📖 READ TRADE:", t);
+
+        drillBody.innerHTML += `
+          <tr>
+            <td class="pnl-col">
+              ${t.pnl >= 0 ? "₹" + t.pnl : "-₹" + Math.abs(t.pnl)}
+            </td>
+            <td>
+              ${
+                Array.isArray(t.rules) && t.rules.length
+                  ? t.rules.join(", ")
+                  : "-"
+              }
+            </td>
+          </tr>
+        `;
+      });
+  };
+}
+
+/* PIE */
+function buildLossPie(t){
+  const lossBy={};
+  t.forEach(x=>{
+    if(x.pnl<0&&x.rules.length){
+      x.rules.forEach(r=>lossBy[r]=(lossBy[r]||0)+Math.abs(x.pnl));
+    }
+  });
+  if(lossChart)lossChart.destroy();
+  lossChart=new Chart(lossPie,{
+    type:"pie",
+    data:{
+      labels:Object.keys(lossBy),
+      datasets:[{
+        data:Object.values(lossBy),
+        backgroundColor:["#ef4444","#facc15","#22c55e","#3b82f6","#a855f7"]
+      }]
+    },
+    options:{
+      plugins:{
+        legend:{position:"bottom"},
+        tooltip:{callbacks:{
+          label:c=>{
+            const tot=c.dataset.data.reduce((a,b)=>a+b,0);
+            return `${c.label} — ₹${c.raw} (${((c.raw/tot)*100).toFixed(1)}%)`;
+          }
+        }}
+      }
+    }
+  });
+}
+
+/* EXPORT */
+function exportCSV(){
+  db.transaction("trades","readonly").objectStore("trades").getAll().onsuccess=e=>{
+    let csv="Date,PnL,Mistakes\n";
+    e.target.result.forEach(x=>csv+=`${x.date},${x.pnl},"${x.rules.join(", ")}"\n`);
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(new Blob([csv]));
+    a.download="trading-journal.csv";
+    a.click();
+  };
+}
+
+/* HELPERS */
+const pnlEl=()=>document.getElementById("pnl");
+function clearForm(){
+  date.value=""; pnl.value="";
+  document.querySelectorAll("input[type=checkbox]").forEach(c=>c.checked=false);
+}
+</script>
+
+</body>
+</html>
