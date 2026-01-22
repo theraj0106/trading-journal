@@ -385,40 +385,50 @@ function openDay(selectedDate) {
 function buildLossPie(trades) {
   const impactByMistake = {};
 
-  trades.forEach(trade => {
-    if (!trade.rules || trade.rules.length === 0) return;
+  trades.forEach(t => {
+    if (!t.rules || t.rules.length === 0) return;
 
-    const impact = Math.abs(trade.pnl); // profit or loss
+    const impact = Math.abs(t.pnl); // profit + loss
 
-    trade.rules.forEach(rule => {
+    t.rules.forEach(rule => {
       impactByMistake[rule] =
         (impactByMistake[rule] || 0) + impact;
     });
   });
 
-  // If no data, destroy chart and exit
-  if (Object.keys(impactByMistake).length === 0) {
-    if (lossChart) lossChart.destroy();
-    return;
+  // Destroy old chart (CRITICAL)
+  if (window.lossChart) {
+    window.lossChart.destroy();
+    window.lossChart = null;
   }
 
-  if (lossChart) lossChart.destroy();
+  const labels = Object.keys(impactByMistake);
+  const data = Object.values(impactByMistake);
 
-  lossChart = new Chart(lossPie, {
+  if (labels.length === 0) return;
+
+  // ✅ Behavior-based color mapping (order safe)
+  const colorMap = {
+    "No Stop Loss": "#ef4444",   // bad
+    "Stop Loss Hit": "#4ade80",  // good discipline
+    "Overtrading": "#facc15",    // warning
+    "FOMO Entry": "#fbbf24",     // warning
+    "Free Channel": "#f97316",   // bad
+    "Self Trade": "#38bdf8",     // neutral
+    "No Mistakes": "#22c55e"     // best
+  };
+
+  const colors = labels.map(l => colorMap[l] || "#94a3b8");
+
+  const ctx = document.getElementById("lossPie").getContext("2d");
+
+  window.lossChart = new Chart(ctx, {
     type: "pie",
     data: {
-      labels: Object.keys(impactByMistake),
+      labels,
       datasets: [{
-        data: Object.values(impactByMistake),
-        backgroundColor: [
-           "#ef4444", // No Stop Loss (red)
-           "#4ade80", // Stop Loss Hit (green)
-           "#facc15", // Overtrading (yellow)
-           "#fbbf24", // FOMO Entry (orange-yellow)
-           "#f97316", // Free Channel (orange-red)
-           "#38bdf8", // Self Trade ( blue)
-           "#22c55e"  // No Mistakes (green)
-        ]
+        data,
+        backgroundColor: colors
       }]
     },
     options: {
@@ -431,7 +441,7 @@ function buildLossPie(trades) {
         tooltip: {
           callbacks: {
             label: ctx => {
-              const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+              const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
               const pct = ((ctx.raw / total) * 100).toFixed(1);
               return `${ctx.label} — ₹${ctx.raw} (${pct}%)`;
             }
@@ -464,6 +474,7 @@ function clearForm(){
 
 </body>
 </html>
+
 
 
 
