@@ -381,32 +381,60 @@ function openDay(selectedDate) {
 }
 
 /* PIE */
-function buildLossPie(t){
-  const lossBy={};
-  t.forEach(x=>{
-    if(x.pnl<0&&x.rules.length){
-      x.rules.forEach(r=>lossBy[r]=(lossBy[r]||0)+Math.abs(x.pnl));
-    }
+function buildLossPie(trades) {
+  const impactByMistake = {};
+
+  trades.forEach(trade => {
+    if (!trade.rules || trade.rules.length === 0) return;
+
+    const impact = Math.abs(trade.pnl); // profit or loss
+
+    trade.rules.forEach(rule => {
+      impactByMistake[rule] =
+        (impactByMistake[rule] || 0) + impact;
+    });
   });
-  if(lossChart)lossChart.destroy();
-  lossChart=new Chart(lossPie,{
-    type:"pie",
-    data:{
-      labels:Object.keys(lossBy),
-      datasets:[{
-        data:Object.values(lossBy),
-        backgroundColor:["#ef4444","#facc15","#22c55e","#3b82f6","#a855f7"]
+
+  // If no data, destroy chart and exit
+  if (Object.keys(impactByMistake).length === 0) {
+    if (lossChart) lossChart.destroy();
+    return;
+  }
+
+  if (lossChart) lossChart.destroy();
+
+  lossChart = new Chart(lossPie, {
+    type: "pie",
+    data: {
+      labels: Object.keys(impactByMistake),
+      datasets: [{
+        data: Object.values(impactByMistake),
+        backgroundColor: [
+          "#ef4444",
+          "#facc15",
+          "#22c55e",
+          "#3b82f6",
+          "#a855f7",
+          "#0ea5e9"
+        ]
       }]
     },
-    options:{
-      plugins:{
-        legend:{position:"bottom"},
-        tooltip:{callbacks:{
-          label:c=>{
-            const tot=c.dataset.data.reduce((a,b)=>a+b,0);
-            return `${c.label} — ₹${c.raw} (${((c.raw/tot)*100).toFixed(1)}%)`;
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "bottom"
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+              const pct = ((ctx.raw / total) * 100).toFixed(1);
+              return `${ctx.label} — ₹${ctx.raw} (${pct}%)`;
+            }
           }
-        }}
+        }
       }
     }
   });
@@ -434,3 +462,4 @@ function clearForm(){
 
 </body>
 </html>
+
