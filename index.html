@@ -411,13 +411,13 @@ function buildLossPie(trades) {
       datasets: [{
         data: Object.values(impactByMistake),
         backgroundColor: [
-          "#ef4444",
-          "#fb7185",
-          "#facc15",
-          "#22c55e",
-          "#3b82f6",
-          "#a855f7",
-          "#0ea5e9"
+           "#ef4444", // No Stop Loss (red)
+           "#4ade80", // Stop Loss Hit (green)
+           "#facc15", // Overtrading (yellow)
+           "#fbbf24", // FOMO Entry (orange-yellow)
+           "#f97316", // Free Channel (orange-red)
+           "#38bdf8", // Self Trade ( blue)
+           "#22c55e"  // No Mistakes (green)
         ]
       }]
     },
@@ -464,5 +464,6 @@ function clearForm(){
 
 </body>
 </html>
+
 
 
