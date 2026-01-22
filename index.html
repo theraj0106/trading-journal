@@ -201,6 +201,7 @@ th{background:#f8fafc}
       <label><input type="checkbox" value="Free Channel"> Free Channel</label>
       <label><input type="checkbox" value="Self Trade"> Self Trade</label>
       <label><input type="checkbox" value="No Mistakes"> No Mistakes</label>
+      <label><input type="checkbox" value="Stop Loss Hit"> Stop Loss Hit</label>
     </div>
 
     <div style="margin-top:12px">
@@ -411,6 +412,7 @@ function buildLossPie(trades) {
         data: Object.values(impactByMistake),
         backgroundColor: [
           "#ef4444",
+          "#fb7185",
           "#facc15",
           "#22c55e",
           "#3b82f6",
@@ -462,4 +464,5 @@ function clearForm(){
 
 </body>
 </html>
+
 
