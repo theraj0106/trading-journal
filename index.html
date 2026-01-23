@@ -188,15 +188,7 @@ th{background:#f8fafc}
         <label>Date</label>
         <input type="date" id="date" class="date-input">
       </div>
-      
-    <label>
-      Instrument:
-      <select id="instrument">
-        <option value="NIFTY">NIFTY</option>
-        <option value="SENSEX">SENSEX</option>
-      </select>
-    </label>
-      
+
       <div class="input-group">
         <label>PnL</label>
         <input type="number" id="pnl" class="pnl-input" placeholder="+ / -">
@@ -278,7 +270,6 @@ req.onsuccess=e=>{
 function saveTrade() {
   const dateValue = document.getElementById("date").value;
   const pnlValue  = Number(document.getElementById("pnl").value);
-  const instrument = document.getElementById("instrument").value;
 
   if (!dateValue || pnlValue === 0) {
     alert("Date & PnL required");
@@ -296,12 +287,10 @@ function saveTrade() {
   });
 
   const trade = {
-  date,
-  pnl,
-  rules: selectedRules,
-  instrument
-};
-
+    date: dateValue,
+    pnl: pnlValue,
+    rules: rules   // 👈 ALWAYS SAVED AS-IS
+  };
 
   console.log("✅ SAVED TRADE:", trade);
 
@@ -333,19 +322,6 @@ function updateSummary(t){
   loss.innerText="₹"+l;
   net.innerText="₹"+(p-l);
 }
-
-function getPnLByInstrument(trades) {
-  const summary = { NIFTY: 0, SENSEX: 0 };
-
-  trades.forEach(t => {
-    if (t.instrument) {
-      summary[t.instrument] += t.pnl;
-    }
-  });
-
-  return summary;
-}
-
 
 /* CALENDAR */
 function buildCalendar(t){
@@ -510,10 +486,3 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
-
-
-
-
-
-
-
