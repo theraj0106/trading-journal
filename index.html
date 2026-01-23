@@ -198,12 +198,12 @@ th{background:#f8fafc}
     <label style="margin-top:10px">Mistakes</label>
     <div class="rules">
       <label><input type="checkbox" value="No Stop Loss"> No Stop Loss</label>
-      <label><input type="checkbox" value="Overtrading"> Overtrading</label>
-      <label><input type="checkbox" value="FOMO Entry"> FOMO Entry</label>
-      <label><input type="checkbox" value="Free Channel"> Free Channel</label>
-      <label><input type="checkbox" value="Self Trade"> Self Trade</label>
-      <label><input type="checkbox" value="No Mistakes"> No Mistakes</label>
-      <label><input type="checkbox" value="Stop Loss Hit"> Stop Loss Hit</label>
+      <label><input type="checkbox" value="Free Channel with SL">   Free Channel with SL </label>
+      <label><input type="checkbox" value="FOMO Entry">  FOMO Entry</label>
+      <label><input type="checkbox" value="Free Channel Target Hit">  Free Channel Target Hit</label>
+      <label><input type="checkbox" value="Target 2 with SL">  Target 2 with SL</label>
+      <label><input type="checkbox" value="Target 1 Hit">  Target 1 Hit</label>
+      <label><input type="checkbox" value="Stop Loss Hit">  Stop Loss Hit</label>
     </div>
 
     <div style="margin-top:12px">
@@ -411,14 +411,19 @@ function buildLossPie(trades) {
 
   // ✅ Behavior-based color mapping (order safe)
   const colorMap = {
-    "No Stop Loss": "#ef4444",   // bad
-    "Stop Loss Hit": "#4ade80",  // good discipline
-    "Overtrading": "#facc15",    // warning
-    "FOMO Entry": "#fbbf24",     // warning
-    "Free Channel": "#f97316",   // bad
-    "Self Trade": "#38bdf8",     // neutral
-    "No Mistakes": "#22c55e"     // best
+  /* ❌ BAD / HIGH RISK */
+  "No Stop Loss": "#dc2626",            // deep red – capital protection failure
+  "Target 2 with SL": "#b91c1c",         // dark red – greed (should exit at T1)
+  "FOMO Entry": "#f59e0b",               // amber – emotional entry
+  /* ⚠️ NOT IDEAL / EXTERNAL */
+  "Free Channel with SL": "#fb923c",     // orange – external dependency (some control)
+  "Free Channel Target Hit": "#ea580c",  // orange – profit but not own setup
+  /* 🟦 DISCIPLINED LOSS */
+  "Stop Loss Hit": "#60a5fa",            // blue – rule-based loss
+  /* ✅ GOOD / DISCIPLINED */
+  "Target 1 Hit": "#22c55e"             // green – correct execution
   };
+
 
   const colors = labels.map(l => colorMap[l] || "#94a3b8");
 
@@ -481,6 +486,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
