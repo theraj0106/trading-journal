@@ -136,6 +136,13 @@ button{
 /* ---- Calendar UI polish ---- */
 .day{
   position: relative; /* required for positioning */
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.day:active{
+  transform: scale(0.97);
+}
+.day:hover{
+  filter: brightness(0.97);
 }
 
 /* Date top-right (quiet, not bold) */
@@ -594,6 +601,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
