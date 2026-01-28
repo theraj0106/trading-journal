@@ -168,6 +168,41 @@ th{background:#f8fafc}
   height:100% !important;
 }
 
+  .calendar-day {
+  border-radius: 10px;
+  padding: 10px;
+  min-height: 95px;
+  font-size: 13px;
+}
+
+.calendar-day.profit {
+  background: #e9f9ee; /* green */
+}
+
+.calendar-day.loss {
+  background: #fdecec; /* red */
+}
+
+.calendar-pnl.profit {
+  color: #15803d;
+  font-weight: bold;
+}
+
+.calendar-pnl.loss {
+  color: #b91c1c;
+  font-weight: bold;
+}
+
+.calendar-meta {
+  margin-top: 2px;
+}
+
+.calendar-wl {
+  margin-top: 6px;
+  font-weight: bold;
+  font-size: 12px;
+}
+
 </style>
 </head>
 
@@ -326,20 +361,55 @@ function updateSummary(t){
 /* CALENDAR */
 function buildCalendar(t){
   calendar.innerHTML="";
-  const d=new Date(),y=d.getFullYear(),m=d.getMonth();
-  const first=new Date(y,m,1).getDay()||7;
-  const days=new Date(y,m+1,0).getDate();
-  const map={};
-  t.forEach(x=>map[x.date]=(map[x.date]||[]).concat(x));
-  ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].forEach(h=>calendar.innerHTML+=`<div class="day-header">${h}</div>`);
-  for(let i=1;i<first;i++)calendar.innerHTML+=`<div></div>`;
-  for(let i=1;i<=days;i++){
-    const ds=`${y}-${String(m+1).padStart(2,"0")}-${String(i).padStart(2,"0")}`;
-    const list=map[ds]||[];
-    let pnl=list.reduce((s,x)=>s+x.pnl,0);
-    calendar.innerHTML+=`
-      <div class="day ${pnl>0?"green":pnl<0?"red":"neutral"}" onclick="openDay('${ds}')">
-        <b>${i}</b><br>${list.length?`₹${pnl}<br>${list.length} trades`:"No Trades"}
+
+  const d = new Date(),
+        y = d.getFullYear(),
+        m = d.getMonth();
+
+  const first = new Date(y, m, 1).getDay() || 7;
+  const days  = new Date(y, m + 1, 0).getDate();
+
+  const map = {};
+  t.forEach(x => {
+    map[x.date] = (map[x.date] || []).concat(x);
+  });
+
+  ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+    .forEach(h => calendar.innerHTML += `<div class="day-header">${h}</div>`);
+
+  for (let i = 1; i < first; i++) {
+    calendar.innerHTML += `<div></div>`;
+  }
+
+  for (let i = 1; i <= days; i++) {
+    const ds = `${y}-${String(m+1).padStart(2,"0")}-${String(i).padStart(2,"0")}`;
+    const list = map[ds] || [];
+
+    if (list.length === 0) {
+      calendar.innerHTML += `
+        <div class="day neutral">
+          <b>${i}</b><br>No Trades
+        </div>`;
+      continue;
+    }
+
+    let pnl = 0, wins = 0, losses = 0;
+
+    list.forEach(x => {
+      pnl += x.pnl;
+      if (x.pnl > 0) wins++;
+      if (x.pnl < 0) losses++;
+    });
+
+    const colorClass = pnl >= 0 ? "green" : "red";
+    const emoji = pnl >= 0 ? "🟢" : "🔴";
+
+    calendar.innerHTML += `
+      <div class="day ${colorClass}" onclick="openDay('${ds}')">
+        <b>${i}</b><br>
+        ₹${pnl}<br>
+        ${list.length} trades<br>
+        ${wins}W / ${losses}L &nbsp; ${emoji}
       </div>`;
   }
 }
@@ -486,3 +556,4 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
