@@ -243,6 +243,40 @@ th{background:#f8fafc}
   font-weight: bold;
   font-size: 12px;
 }
+/* ---- Summary UI ---- */
+.summary-cards{
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+}
+
+.summary-box{
+  flex:1;
+  min-width:200px;
+  background:#f9fafb;
+  border:1px solid #e5e7eb;
+  border-radius:10px;
+  padding:16px;
+}
+
+.summary-label{
+  font-size:12px;
+  text-transform:uppercase;
+  color:#6b7280;
+  margin-bottom:6px;
+}
+
+.summary-value{
+  font-size:24px;
+  font-weight:bold;
+  line-height:1.2;
+}
+
+/* Color accents */
+.profit-box .summary-value{ color:#16a34a; }
+.loss-box .summary-value{ color:#dc2626; }
+.net-box .summary-value{ color:#111827; }
+
 
 </style>
 </head>
@@ -302,12 +336,21 @@ th{background:#f8fafc}
 
 <!-- SUMMARY -->
 <div class="card">
-<h2>Summary</h2>
-<div class="summary">
-  <div>Total Profit<br><span id="profit" style="color:green">₹0</span></div>
-  <div>Total Loss<br><span id="loss" style="color:red">₹0</span></div>
-  <div>Net P&amp;L<br><span id="net">₹0</span></div>
-</div>
+  <h2>Summary</h2>
+  <div class="summary-cards">
+    <div class="summary-box profit-box">
+      <div class="summary-label">Total Profit</div>
+      <div class="summary-value" id="profit">₹0</div>
+    </div>
+    <div class="summary-box loss-box">
+      <div class="summary-label">Total Loss</div>
+      <div class="summary-value" id="loss">₹0</div>
+    </div>
+    <div class="summary-box net-box">
+      <div class="summary-label">Net P&amp;L</div>
+      <div class="summary-value" id="net">₹0</div>
+    </div>
+  </div>
 </div>
 
 <!-- CALENDAR -->
@@ -601,6 +644,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
