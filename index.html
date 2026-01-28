@@ -133,6 +133,40 @@ button{
 .red{background:#fdecec;color:#991b1b}
 .neutral{background:#f1f5f9;color:#555}
 
+/* ---- Calendar UI polish ---- */
+.day{
+  position: relative; /* required for positioning */
+}
+
+/* Date top-right (quiet, not bold) */
+.day-date{
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 13px;
+  font-weight: normal;
+  opacity: 0.75;
+}
+
+/* PnL hero (left aligned) */
+.day-pnl{
+  margin-top: 20px;
+  font-size: 16px;      /* slightly bigger */
+  font-weight: bold;   /* bold */
+}
+
+/* Bottom-right details */
+.day-details{
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  text-align: right;
+  font-size: 12px;
+  line-height: 1.4;
+  opacity: 0.8;
+}
+
+
 /* ---------- TABLE ---------- */
 .hidden{display:none}
 table{
@@ -360,7 +394,7 @@ function updateSummary(t){
 
 /* CALENDAR */
 function buildCalendar(t){
-  calendar.innerHTML="";
+  calendar.innerHTML = "";
 
   const d = new Date(),
         y = d.getFullYear(),
@@ -388,7 +422,8 @@ function buildCalendar(t){
     if (list.length === 0) {
       calendar.innerHTML += `
         <div class="day neutral">
-          <b>${i}</b><br>No Trades
+          <div class="day-date">${i}</div>
+          No Trades
         </div>`;
       continue;
     }
@@ -402,13 +437,17 @@ function buildCalendar(t){
     });
 
     const colorClass = pnl >= 0 ? "green" : "red";
-    
+
     calendar.innerHTML += `
       <div class="day ${colorClass}" onclick="openDay('${ds}')">
-        <b>${i}</b><br>
-        ₹${pnl}<br>
-        ${list.length} trades<br>
-        ${wins}W / ${losses}L 
+        <div class="day-date">${i}</div>
+
+        <div class="day-pnl">₹${pnl}</div>
+
+        <div class="day-details">
+          ${list.length} trades<br>
+          ${wins}W / ${losses}L
+        </div>
       </div>`;
   }
 }
@@ -555,5 +594,6 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
