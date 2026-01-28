@@ -402,14 +402,13 @@ function buildCalendar(t){
     });
 
     const colorClass = pnl >= 0 ? "green" : "red";
-    const emoji = pnl >= 0 ? "🟢" : "🔴";
-
+    
     calendar.innerHTML += `
       <div class="day ${colorClass}" onclick="openDay('${ds}')">
         <b>${i}</b><br>
         ₹${pnl}<br>
         ${list.length} trades<br>
-        ${wins}W / ${losses}L &nbsp; ${emoji}
+        ${wins}W / ${losses}L 
       </div>`;
   }
 }
@@ -556,4 +555,5 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
