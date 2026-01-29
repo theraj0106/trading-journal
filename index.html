@@ -277,6 +277,36 @@ th{background:#f8fafc}
 .loss-box .summary-value{ color:#dc2626; }
 .net-box .summary-value{ color:#111827; }
 
+/* ---- Drill-down table (final) ---- */
+
+/* PnL */
+.pnl{
+  font-weight:bold;
+}
+.pnl.profit{
+  color:#16a34a;
+}
+.pnl.loss{
+  color:#dc2626;
+}
+
+/* Mistake tag */
+.mistake{
+  display:inline-block;
+  padding:4px 10px;
+  font-size:12px;
+  border-radius:999px;
+  background:#f1f5f9;
+  color:#374151;
+  border:1px solid #e5e7eb;
+}
+
+/* Mistake on loss */
+.mistake.loss{
+  background:#fee2e2;
+  color:#b91c1c;
+  border-color:#fecaca;
+}
 
 </style>
 </head>
@@ -520,23 +550,22 @@ function openDay(selectedDate) {
     req.result
       .filter(t => t.date === selectedDate)
       .forEach(t => {
-
-        console.log("📖 READ TRADE:", t);
-
         drillBody.innerHTML += `
-          <tr>
-            <td class="pnl-col">
-              ${t.pnl >= 0 ? "₹" + t.pnl : "-₹" + Math.abs(t.pnl)}
-            </td>
-            <td>
-              ${
-                Array.isArray(t.rules) && t.rules.length
-                  ? t.rules.join(", ")
-                  : "-"
-              }
-            </td>
-          </tr>
-        `;
+      <tr>
+        <td class="pnl-col pnl ${t.pnl < 0 ? 'loss' : 'profit'}">
+          ${t.pnl >= 0 ? "₹" + t.pnl : "-₹" + Math.abs(t.pnl)}
+      </td>
+      <td>
+        ${
+          Array.isArray(t.rules) && t.rules.length
+            ? `<span class="mistake ${t.pnl < 0 ? 'loss' : ''}">
+               ${t.rules.join(", ")}
+             </span>`
+          : "-"
+        }
+    </td>
+  </tr>
+`;
       });
   };
 }
@@ -644,6 +673,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
