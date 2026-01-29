@@ -360,6 +360,40 @@ th{background:#f8fafc}
   white-space:nowrap;
 }
 
+  /* ---------- CHECKBOXES (COMPACT PREMIUM – FINAL) ---------- */
+.rules{
+  display:grid;
+  grid-template-columns:repeat(3, auto); /* dense grid */
+  gap:6px 8px;
+  margin-top:6px;
+}
+
+.rules label{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:12px;
+  background:#f9fafb;
+  padding:4px 8px;          
+  border-radius:6px;
+  border:1px solid #e5e7eb;
+  cursor:pointer;
+  line-height:1.2;
+
+  white-space:nowrap;       
+  max-width:fit-content;    
+}
+
+.rules input{
+  width:12px;              
+  height:12px;
+  margin:0;
+}
+
+.rules label:hover{
+  background:#f1f5f9;
+}
+
 </style>
 </head>
 
@@ -793,6 +827,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
