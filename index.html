@@ -319,6 +319,46 @@ th{background:#f8fafc}
   border-color:#bbf7d0;
   color:#166534;
 }
+/* ---------- MISTAKE HEATMAP ---------- */
+.heatmap{
+  display:flex;
+  align-items:flex-end;
+  gap:18px;
+  height:220px;              /* REQUIRED */
+  padding-bottom:6px;
+}
+
+.bar-col{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  height:100%;
+}
+
+.bar{
+  width:34px;
+  border-radius:6px 6px 0 0;
+}
+
+/* Red intensity */
+.bar.high{ background:#b91c1c; }
+.bar.medium{ background:#dc2626; }
+.bar.low{ background:#f87171; }
+
+.bar-value{
+  margin-top:6px;
+  font-size:12px;
+  font-weight:bold;
+  color:#991b1b;
+}
+
+.bar-label{
+  font-size:11px;
+  color:#374151;
+  text-align:center;
+  white-space:nowrap;
+}
 
 </style>
 </head>
@@ -366,11 +406,25 @@ th{background:#f8fafc}
 
   <!-- RIGHT 50% -->
   <div class="trade-chart">
-    <h3>Profit &amp; Loss Distribution</h3>
-   <div class="pie-wrapper">
-  <canvas id="lossPie"></canvas>
-</div>
+  <div style="display:flex; gap:24px; align-items:flex-end">
+
+    <!-- PIE -->
+    <div>
+      <h3>Profit & Loss Distribution</h3>
+      <div class="pie-wrapper">
+        <canvas id="lossPie"></canvas>
+      </div>
+    </div>
+
+    <!-- HEATMAP -->
+    <div>
+      <h3>Mistake Impact (₹)</h3>
+      <div class="heatmap" id="mistakeHeatmap"></div>
+    </div>
+
   </div>
+</div>
+
 
 </div>
 </div>
@@ -471,6 +525,7 @@ function loadAll(){
       updateSummary(t);
       buildCalendar(t);
       buildLossPie(t);
+      buildMistakeHeatmap(t);
     };
 }
 
@@ -657,6 +712,60 @@ function buildLossPie(trades) {
   });
 }
 
+function buildMistakeHeatmap(trades) {
+  const container = document.getElementById("mistakeHeatmap");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const impactByMistake = {};
+
+  trades.forEach(t => {
+    if (!t.rules || !t.rules.length) return;
+
+    const impact = Math.abs(t.pnl);
+
+    t.rules.forEach(rule => {
+      impactByMistake[rule] =
+        (impactByMistake[rule] || 0) + impact;
+    });
+  });
+
+  const entries = Object.entries(impactByMistake)
+    .sort((a,b) => b[1] - a[1])
+    .slice(0,5);
+
+  if (!entries.length) return;
+
+  const max = entries[0][1];
+
+  entries.forEach(([mistake, value]) => {
+    const height = (value / max) * 100;
+
+    let level = "low";
+    if (height > 70) level = "high";
+    else if (height > 40) level = "medium";
+
+    const short = mistake
+      .replace("No Stop Loss","No SL")
+      .replace("FOMO Entry","FOMO")
+      .replace("Target 2 with SL","T2 SL")
+      .replace("Free Channel with SL","Free Ch SL")
+      .replace("Free Channel Target Hit","Free Ch T1")
+      .replace("Stop Loss Hit","SL Hit")
+      .replace("Target 1 Hit","T1 Hit");
+
+    container.innerHTML += `
+      <div class="bar-col">
+        <div class="bar ${level}" style="height:${height}%"></div>
+        <div class="bar-value">₹${Math.round(value)}</div>
+        <div class="bar-label">${short}</div>
+      </div>
+    `;
+  });
+}
+
+
 /* EXPORT */
 function exportCSV(){
   db.transaction("trades","readonly").objectStore("trades").getAll().onsuccess=e=>{
@@ -684,6 +793,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
