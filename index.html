@@ -797,11 +797,11 @@ function buildMistakeHeatmap(trades) {
     const height = (value / max) * 100;
     const color = mistakeColorMap[mistake] || "#94a3b8";
     const short = mistake
-      .replace("No Stop Loss","No SL")
+      .replace("No Stop Loss","NO SL")
       .replace("FOMO Entry","FOMO")
       .replace("Target 2 with SL","T2 SL")
-      .replace("Free Channel with SL","Free Ch SL")
-      .replace("Free Channel Target Hit","Free Ch T1")
+      .replace("Free Channel with SL","Free SL")
+      .replace("Free Channel Target Hit","Free T1")
       .replace("Stop Loss Hit","SL Hit")
       .replace("Target 1 Hit","T1 Hit");
 
@@ -843,6 +843,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
