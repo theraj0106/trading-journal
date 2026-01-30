@@ -514,6 +514,15 @@ th{background:#f8fafc}
 
 <script>
 let db, lossChart;
+const mistakeColorMap = {
+  "No Stop Loss": "#dc2626",
+  "Target 2 with SL": "#b91c1c",
+  "FOMO Entry": "#f59e0b",
+  "Free Channel with SL": "#fb923c",
+  "Free Channel Target Hit": "#ea580c",
+  "Stop Loss Hit": "#60a5fa",
+  "Target 1 Hit": "#22c55e"
+};
 
 /* DB */
 const req=indexedDB.open("TradeJournalDB",1);
@@ -733,7 +742,7 @@ function buildLossPie(trades) {
       labels,
       datasets: [{
         data,
-        backgroundColor: colors
+        backgroundColor: labels.map(l => mistakeColorMap[l] || "#94a3b8")
       }]
     },
     options: {
@@ -786,11 +795,7 @@ function buildMistakeHeatmap(trades) {
 
   entries.forEach(([mistake, value]) => {
     const height = (value / max) * 100;
-
-    let level = "low";
-    if (height > 70) level = "high";
-    else if (height > 40) level = "medium";
-
+    const color = mistakeColorMap[mistake] || "#94a3b8";
     const short = mistake
       .replace("No Stop Loss","No SL")
       .replace("FOMO Entry","FOMO")
@@ -802,7 +807,7 @@ function buildMistakeHeatmap(trades) {
 
     container.innerHTML += `
       <div class="bar-col">
-        <div class="bar ${level}" style="height:${height}%"></div>
+        <div class="bar" style="height:${height}%; background:${color}"></div>
         <div class="bar-value">₹${Math.round(value)}</div>
         <div class="bar-label">${short}</div>
       </div>
@@ -838,6 +843,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
