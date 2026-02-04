@@ -404,6 +404,7 @@ th{background:#f8fafc}
 .rules label:hover{
   background:#f1f5f9;
 }
+
 /* ===== MONTHLY PERFORMANCE (PURE CSS BARS) ===== */
 
 .monthly-grid{
@@ -474,7 +475,6 @@ th{background:#f8fafc}
 
 .net.profit{ color:#16a34a; }
 .net.loss{ color:#dc2626; }
-
 
 
 </style>
@@ -574,6 +574,7 @@ th{background:#f8fafc}
   </div>
 </div>
 
+
 <!-- CALENDAR -->
 <div class="card">
 <h2>📅 Calendar</h2>
@@ -655,15 +656,18 @@ function saveTrade() {
 /* LOAD */
 function loadAll(){
   db.transaction("trades","readonly")
-        .objectStore("trades")
+    .objectStore("trades")
     .getAll()
     .onsuccess = e => {
-      const trades = e.target.result;  
+
+      const trades = e.target.result;   // ⭐ ADD THIS LINE
+
       updateSummary(trades);
       buildMonthlyPerformance(trades);
       buildCalendar(trades);
       buildLossPie(trades);
       buildMistakeHeatmap(trades);
+    };
 }
 
 /* SUMMARY */
@@ -737,10 +741,12 @@ function buildCalendar(t){
 
 function buildMonthlyPerformance(trades){
   const grid = document.getElementById("monthlyGrid");
+
   if (!grid) {
     console.warn("❌ monthlyGrid not found");
     return;
   }
+
   if (!Array.isArray(trades) || trades.length === 0) {
     console.warn("❌ No trades for monthly chart");
     grid.innerHTML = "<div style='color:#6b7280'>No data</div>";
@@ -753,6 +759,7 @@ function buildMonthlyPerformance(trades){
 
   trades.forEach(t => {
     if (!t.date || typeof t.pnl !== "number") return;
+
     const d = new Date(t.date);
     const key = `${d.getFullYear()}-${d.getMonth()}`;
 
@@ -764,6 +771,7 @@ function buildMonthlyPerformance(trades){
         loss: 0
       };
     }
+
     monthMap[key].trades++;
     if (t.pnl > 0) monthMap[key].profit += t.pnl;
     if (t.pnl < 0) monthMap[key].loss += Math.abs(t.pnl);
@@ -789,15 +797,19 @@ function buildMonthlyPerformance(trades){
     grid.innerHTML += `
       <div class="month">
         <div class="bar-area">
+
           <div class="bar-wrap">
             ${m.profit ? `<div class="bar-value">₹${m.profit.toLocaleString()}</div>` : ``}
             <div class="bar profit" style="height:${profitHeight}%"></div>
           </div>
+
           <div class="bar-wrap">
             ${m.loss ? `<div class="bar-value">₹${m.loss.toLocaleString()}</div>` : ``}
             <div class="bar loss" style="height:${lossHeight}%"></div>
           </div>
+
         </div>
+
         <div class="month-label">${m.label}</div>
         <div class="trade-count">${m.trades} trades</div>
         <div class="net ${net >= 0 ? "profit" : "loss"}">
@@ -806,8 +818,10 @@ function buildMonthlyPerformance(trades){
       </div>
     `;
   });
+
   console.log("✅ Monthly chart rendered");
 }
+
 
 /* DRILL */
 function openDay(selectedDate) {
@@ -1000,20 +1014,3 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
