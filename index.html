@@ -426,7 +426,7 @@ th{background:#f8fafc}
   display:flex;
   align-items:flex-end;
   justify-content:center;
-  gap:1px;
+  gap:5px;
 }
 
 /* IMPORTANT: enables % height bars */
@@ -921,7 +921,7 @@ function buildLossPie(trades) {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          position: "bottom"
+          display: false
         },
         tooltip: {
           callbacks: {
@@ -1014,3 +1014,4 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
