@@ -404,6 +404,78 @@ th{background:#f8fafc}
 .rules label:hover{
   background:#f1f5f9;
 }
+/* ===== MONTHLY PERFORMANCE (PURE CSS BARS) ===== */
+
+.monthly-grid{
+  display:flex;
+  gap:20px;
+  align-items:flex-end;
+  min-height:260px;  
+}
+
+/* One month column */
+.month{
+  width:120px;
+  text-align:center;
+}
+
+/* Bars container */
+.bar-area{
+  height:220px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  gap:1px;
+}
+
+/* IMPORTANT: enables % height bars */
+.bar-wrap{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+}
+
+/* Bars */
+.bar{
+  width:20px;
+  border-radius:6px 6px 0 0;
+}
+
+.bar.profit{ background:#16a34a; }  /* green */
+.bar.loss{ background:#dc2626; }    /* red */
+
+/* Values above bars */
+.bar-value{
+  font-size:12px;
+  margin-bottom:6px;
+  color:#111827;
+}
+
+/* Month text */
+.month-label{
+  margin-top:10px;
+  font-size:13px;
+  color:#374151;
+}
+
+.trade-count{
+  font-size:12px;
+  color:#6b7280;
+  margin-top:px;
+}
+
+/* Net P&L (calendar-style emphasis) */
+.net{
+  margin-top:6px;
+  font-size:16px;
+  font-weight:bold;
+}
+
+.net.profit{ color:#16a34a; }
+.net.loss{ color:#dc2626; }
+
+
 
 </style>
 </head>
@@ -493,6 +565,15 @@ th{background:#f8fafc}
   </div>
 </div>
 
+<!-- MONTHLY PERFORMANCE -->
+<div class="card">
+  <h2>📊 Monthly Performance</h2>
+
+  <div class="monthly-grid" id="monthlyGrid">
+    <!-- JS will render months here -->
+  </div>
+</div>
+
 <!-- CALENDAR -->
 <div class="card">
 <h2>📅 Calendar</h2>
@@ -574,13 +655,15 @@ function saveTrade() {
 /* LOAD */
 function loadAll(){
   db.transaction("trades","readonly")
-    .objectStore("trades").getAll().onsuccess=e=>{
-      const t=e.target.result;
-      updateSummary(t);
-      buildCalendar(t);
-      buildLossPie(t);
-      buildMistakeHeatmap(t);
-    };
+        .objectStore("trades")
+    .getAll()
+    .onsuccess = e => {
+      const trades = e.target.result;  
+      updateSummary(trades);
+      buildMonthlyPerformance(trades);
+      buildCalendar(trades);
+      buildLossPie(trades);
+      buildMistakeHeatmap(trades);
 }
 
 /* SUMMARY */
@@ -650,6 +733,80 @@ function buildCalendar(t){
         </div>
       </div>`;
   }
+}
+
+function buildMonthlyPerformance(trades){
+  const grid = document.getElementById("monthlyGrid");
+  if (!grid) {
+    console.warn("❌ monthlyGrid not found");
+    return;
+  }
+  if (!Array.isArray(trades) || trades.length === 0) {
+    console.warn("❌ No trades for monthly chart");
+    grid.innerHTML = "<div style='color:#6b7280'>No data</div>";
+    return;
+  }
+
+  grid.innerHTML = "";
+
+  const monthMap = {};
+
+  trades.forEach(t => {
+    if (!t.date || typeof t.pnl !== "number") return;
+    const d = new Date(t.date);
+    const key = `${d.getFullYear()}-${d.getMonth()}`;
+
+    if (!monthMap[key]) {
+      monthMap[key] = {
+        label: d.toLocaleString("default",{month:"short",year:"numeric"}),
+        trades: 0,
+        profit: 0,
+        loss: 0
+      };
+    }
+    monthMap[key].trades++;
+    if (t.pnl > 0) monthMap[key].profit += t.pnl;
+    if (t.pnl < 0) monthMap[key].loss += Math.abs(t.pnl);
+  });
+
+  const months = Object.values(monthMap);
+
+  if (!months.length) {
+    grid.innerHTML = "<div style='color:#6b7280'>No monthly data</div>";
+    return;
+  }
+
+  const maxValue = Math.max(
+    ...months.map(m => Math.max(m.profit, m.loss, 1))
+  );
+
+  months.forEach(m => {
+    const net = m.profit - m.loss;
+
+    const profitHeight = (m.profit / maxValue) * 100;
+    const lossHeight   = (m.loss / maxValue) * 100;
+
+    grid.innerHTML += `
+      <div class="month">
+        <div class="bar-area">
+          <div class="bar-wrap">
+            ${m.profit ? `<div class="bar-value">₹${m.profit.toLocaleString()}</div>` : ``}
+            <div class="bar profit" style="height:${profitHeight}%"></div>
+          </div>
+          <div class="bar-wrap">
+            ${m.loss ? `<div class="bar-value">₹${m.loss.toLocaleString()}</div>` : ``}
+            <div class="bar loss" style="height:${lossHeight}%"></div>
+          </div>
+        </div>
+        <div class="month-label">${m.label}</div>
+        <div class="trade-count">${m.trades} trades</div>
+        <div class="net ${net >= 0 ? "profit" : "loss"}">
+          ${net >= 0 ? "₹" : "-₹"}${Math.abs(net).toLocaleString()}
+        </div>
+      </div>
+    `;
+  });
+  console.log("✅ Monthly chart rendered");
 }
 
 /* DRILL */
@@ -843,6 +1000,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
