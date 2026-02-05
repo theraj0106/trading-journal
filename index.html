@@ -675,7 +675,7 @@ function saveTrade() {
       rules.push(cb.value);
     }
   });
-
+  const isBrokerage = rules.includes("BROKERAGE");
   const trade = {
     date: dateValue,
     pnl: pnlValue,
@@ -1058,6 +1058,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
