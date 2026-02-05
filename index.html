@@ -536,73 +536,6 @@ th{background:#f8fafc}
   font-size:14px;
 }
 
-/* ---------- SELECT (Instrument Dropdown) ---------- */
-.select-input {
-  appearance: none;                 /* remove default arrow */
-  -webkit-appearance: none;
-  -moz-appearance: none;
-
-  padding: 6px 34px 6px 10px;        /* space for arrow */
-  font-size: 12px;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  background-color: #fff;
-  color: #111827;
-
-  height: 30px;                     /* MATCH input height */
-  width: 160px;
-
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' fill='gray' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5.5 7.5l4.5 4.5 4.5-4.5'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 14px;
-}
-
-/* Hover & focus polish */
-.select-input:hover {
-  background-color: #f9fafb;
-}
-
-.select-input:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.3);
-}
-
-/* Header row */
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-}
-
-/* Chevron animation */
-.chevron {
-  font-size: 18px;
-  transition: transform 0.2s ease;
-}
-
-/* Body collapse animation */
-.card-body {
-  overflow: hidden;
-  transition: max-height 0.25s ease, opacity 0.2s ease;
-}
-
-/* Collapsed state */
-.collapsible.collapsed .card-body {
-  max-height: 0;
-  opacity: 0;
-}
-
-/* Rotate arrow */
-.collapsible.collapsed .chevron {
-  transform: rotate(-90deg);
-}
-
-
-
-
 </style>
 </head>
 
@@ -629,14 +562,6 @@ th{background:#f8fafc}
         <input type="number" id="pnl" class="pnl-input" placeholder="+ / -">
       </div>
     </div>
-
-     <div class="input-group">
-  <label>Instrument</label>
-  <select id="instrument" class="select-input">
-    <option value="NIFTY">NIFTY</option>
-    <option value="SENSEX">SENSEX</option>
-  </select>
-</div>
 
     <label style="margin-top:10px">Mistakes</label>
   <div class="rules"> <label class="mistake-card bad">   <input type="checkbox" value="No Stop Loss"> No SL </label> 
@@ -682,42 +607,33 @@ th{background:#f8fafc}
 </div>
 
 <!-- SUMMARY -->
-<div class="card collapsible">
-  <div class="card-header" onclick="toggleSection(this)">
-    <h2>Summary</h2>
-    <span class="chevron">▾</span>
-  </div>
-  <div class="card-body">
-    <div class="summary-cards">
-      <div class="summary-box profit-box">
-        <div class="summary-label">Total Profit</div>
-        <div class="summary-value" id="profit">₹0</div>
-      </div>
-      <div class="summary-box loss-box">
-        <div class="summary-label">Total Loss</div>
-        <div class="summary-value" id="loss">₹0</div>
-      </div>
-      <div class="summary-box net-box">
-        <div class="summary-label">Net P&amp;L</div>
-        <div class="summary-value" id="net">₹0</div>
-      </div>
-
-<!-- MONTHLY PERFORMANCE -->
-<div class="card collapsible collapsed">
-  <div class="card-header" onclick="toggleSection(this)">
-    <h2>📊 Monthly Performance</h2>
-    <span class="chevron">▾</span>
-  </div>
-<div class="card collapsible collapsed">
-  <div class="card-header" onclick="toggleSection(this)">
-    <h2>📈 Instrument Performance</h2>
-    <span class="chevron">▾</span>
-  </div>
-
-  <div class="card-body">
-    <div id="instrumentStats" style="display:flex; gap:24px;"></div>
+<div class="card">
+  <h2>Summary</h2>
+  <div class="summary-cards">
+    <div class="summary-box profit-box">
+      <div class="summary-label">Total Profit</div>
+      <div class="summary-value" id="profit">₹0</div>
+    </div>
+    <div class="summary-box loss-box">
+      <div class="summary-label">Total Loss</div>
+      <div class="summary-value" id="loss">₹0</div>
+    </div>
+    <div class="summary-box net-box">
+      <div class="summary-label">Net P&amp;L</div>
+      <div class="summary-value" id="net">₹0</div>
+    </div>
   </div>
 </div>
+
+<!-- MONTHLY PERFORMANCE -->
+<div class="card">
+  <h2>📊 Monthly Performance</h2>
+
+  <div class="monthly-grid" id="monthlyGrid">
+    <!-- JS will render months here -->
+  </div>
+</div>
+
 
 <!-- CALENDAR -->
 <div class="card">
@@ -771,7 +687,6 @@ req.onsuccess=e=>{
 function saveTrade() {
   const dateValue = document.getElementById("date").value;
   const pnlValue  = Number(document.getElementById("pnl").value);
-  const instrumentValue = document.getElementById("instrument").value;
 
   if (!dateValue || pnlValue === 0) {
     alert("Date & PnL required");
@@ -792,8 +707,7 @@ function saveTrade() {
     date: dateValue,
     pnl: pnlValue,
     rules: rules,
-    isBrokerage,
-    instrument: instrumentValue 
+    isBrokerage 
   };
 
   console.log("✅ SAVED TRADE:", trade);
@@ -821,7 +735,6 @@ function loadAll(){
       buildCalendar(trades);
       buildLossPie(trades);
       buildMistakeHeatmap(trades);
-      buildInstrumentPerformance(trades);
     };
 }
 
@@ -1192,50 +1105,6 @@ function changeMonth(delta){
   loadAll();  
 }
 
-function buildInstrumentPerformance(trades) {
-  const container = document.getElementById("instrumentStats");
-  if (!container) return;
-
-  const stats = {
-    NIFTY: { pnl: 0, trades: 0 },
-    SENSEX: { pnl: 0, trades: 0 }
-  };
-
-  trades.forEach(t => {
-   if (!t.instrument) return;
-    const inst = t.instrument || "NIFTY"; // 👈 fallback for old trades
-    stats[inst].pnl += t.pnl;
-    stats[inst].trades += 1;
-  });
-
-  container.innerHTML = `
-    <div class="summary-box">
-      <div class="summary-label">NIFTY</div>
-      <div class="summary-value" style="color:${stats.NIFTY.pnl >= 0 ? '#16a34a' : '#dc2626'}">
-        ₹${stats.NIFTY.pnl}
-      </div>
-      <div style="font-size:12px;color:#6b7280">
-        ${stats.NIFTY.trades} trades
-      </div>
-    </div>
-
-    <div class="summary-box">
-      <div class="summary-label">SENSEX</div>
-      <div class="summary-value" style="color:${stats.SENSEX.pnl >= 0 ? '#16a34a' : '#dc2626'}">
-        ₹${stats.SENSEX.pnl}
-      </div>
-      <div style="font-size:12px;color:#6b7280">
-        ${stats.SENSEX.trades} trades
-      </div>
-    </div>
-  `;
-}
-
-function toggleSection(header){
-  const card = header.closest(".collapsible");
-  card.classList.toggle("collapsed");
-}
-
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js");
 }
@@ -1244,5 +1113,3 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
-
-
