@@ -678,7 +678,8 @@ function saveTrade() {
   const trade = {
     date: dateValue,
     pnl: pnlValue,
-    rules: rules   // 👈 ALWAYS SAVED AS-IS
+    rules: rules,
+    isBrokerage 
   };
 
   console.log("✅ SAVED TRADE:", trade);
@@ -758,6 +759,7 @@ function buildCalendar(t){
 
     list.forEach(x => {
       pnl += x.pnl;
+      if (x.isBrokerage) return; 
       if (x.pnl > 0) wins++;
       if (x.pnl < 0) losses++;
     });
@@ -771,7 +773,7 @@ function buildCalendar(t){
         <div class="day-pnl">₹${pnl}</div>
 
         <div class="day-details">
-          ${list.length} trades<br>
+         ${list.filter(t => !t.isBrokerage).length} trades<br>
           ${wins}W / ${losses}L
         </div>
       </div>`;
@@ -905,6 +907,7 @@ function buildLossPie(trades) {
   const impactByMistake = {};
 
   trades.forEach(t => {
+    if (t.isBrokerage) return;
     if (!t.rules || t.rules.length === 0) return;
 
     const impact = Math.abs(t.pnl); // profit + loss
@@ -985,6 +988,7 @@ function buildMistakeHeatmap(trades) {
   const impactByMistake = {};
 
   trades.forEach(t => {
+    if (t.isBrokerage) return;
     if (!t.rules || !t.rules.length) return;
 
     const impact = Math.abs(t.pnl);
@@ -1053,6 +1057,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
