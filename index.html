@@ -515,6 +515,26 @@ th{background:#f8fafc}
   filter: brightness(1.05);
 }
 
+.calendar-header{
+  justify-content:center;
+  align-items:center;
+  gap:16px;
+  margin-bottom:12px;
+}
+
+.calendar-header button{
+  border:none;
+  background:#f1f5f9;
+  border-radius:6px;
+  padding:4px 10px;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.calendar-header span{
+  font-weight:bold;
+  font-size:14px;
+}
 
 </style>
 </head>
@@ -618,6 +638,11 @@ th{background:#f8fafc}
 <!-- CALENDAR -->
 <div class="card">
 <h2>📅 Calendar</h2>
+<div class="calendar-header">
+  <button onclick="changeMonth(-1)">◀</button>
+  <span id="calendarTitle"></span>
+  <button onclick="changeMonth(1)">▶</button>
+</div>
 <div class="calendar" id="calendar"></div>
 </div>
 
@@ -636,6 +661,8 @@ th{background:#f8fafc}
 
 <script>
 let db, lossChart;
+let currentMonth = new Date().getMonth();
+let currentYear  = new Date().getFullYear();
 const mistakeColorMap = {
   "No Stop Loss": "#dc2626",
   "Target 2 with SL": "#b91c1c",
@@ -724,9 +751,16 @@ function updateSummary(t){
 function buildCalendar(t){
   calendar.innerHTML = "";
 
-  const d = new Date(),
-        y = d.getFullYear(),
-        m = d.getMonth();
+const y = currentYear;
+ const m = currentMonth;
+
+document.getElementById("calendarTitle").innerText =
+  new Date(y, m).toLocaleString("default", {
+    month: "long",
+    year: "numeric"
+  });
+
+
 
   const first = new Date(y, m, 1).getDay() || 7;
   const days  = new Date(y, m + 1, 0).getDate();
@@ -1052,6 +1086,19 @@ function clearForm(){
   document.querySelectorAll("input[type=checkbox]").forEach(c=>c.checked=false);
 }
 
+function changeMonth(delta){
+  currentMonth += delta;
+  if (currentMonth < 0) {
+    currentMonth = 11;
+    currentYear--;
+  }
+  if (currentMonth > 11) {
+    currentMonth = 0;
+    currentYear++;
+  }
+  loadAll();  
+}
+
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js");
 }
@@ -1060,6 +1107,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
