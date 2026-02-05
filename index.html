@@ -1259,8 +1259,11 @@ function toggleSection(header){
   card.classList.toggle("collapsed");
 }
 
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
 
 </script>
 
 </body>
 </html>
+
