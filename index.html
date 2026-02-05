@@ -814,7 +814,9 @@ function buildMonthlyPerformance(trades){
       };
     }
 
-    monthMap[key].trades++;
+    if (!t.isBrokerage) {
+    monthMap[key].trades++;   
+    }
     if (t.pnl > 0) monthMap[key].profit += t.pnl;
     if (t.pnl < 0) monthMap[key].loss += Math.abs(t.pnl);
   });
@@ -1058,6 +1060,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
