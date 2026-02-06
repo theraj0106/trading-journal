@@ -633,6 +633,7 @@ th{background:#f8fafc}
   <select id="instrument" class="select-input">
     <option value="NIFTY">NIFTY</option>
     <option value="SENSEX">SENSEX</option>
+    <option value="BROKERAGE">BROKERAGE</option>
   </select>
 </div>
 
@@ -1226,6 +1227,7 @@ function buildInstrumentPerformance(trades) {
 
   trades.forEach(t => {
    if (!t.instrument) return;
+    if (t.instrument === "BROKERAGE") return;
     const inst = t.instrument || "NIFTY"; // 👈 fallback for old trades
     stats[inst].pnl += t.pnl;
     stats[inst].trades += 1;
@@ -1266,5 +1268,6 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
