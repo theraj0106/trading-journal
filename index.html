@@ -600,6 +600,46 @@ th{background:#f8fafc}
   transform: rotate(-90deg);
 }
 
+  .instrument-card {
+  flex: 1;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.instrument-name {
+  font-size: 13px;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.instrument-pnl {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.instrument-pnl.profit {
+  color: #16a34a;
+}
+
+.instrument-pnl.loss {
+  color: #dc2626;
+}
+
+.instrument-trades {
+  font-size: 13px;
+  color: #374151;
+  margin-top: 6px;
+}
+
+.instrument-wl {
+  font-size: 12px;
+  margin-top: 4px;
+  color: #6b7280;
+}
+
 
 </style>
 </head>
@@ -1220,40 +1260,60 @@ function buildInstrumentPerformance(trades) {
   const container = document.getElementById("instrumentStats");
   if (!container) return;
 
-  const stats = {
-    NIFTY: { pnl: 0, trades: 0 },
-    SENSEX: { pnl: 0, trades: 0 }
+  container.innerHTML = "";
+
+  const instruments = {
+    NIFTY: {
+      pnl: 0,
+      trades: 0,
+      wins: 0,
+      losses: 0
+    },
+    SENSEX: {
+      pnl: 0,
+      trades: 0,
+      wins: 0,
+      losses: 0
+    }
   };
 
   trades.forEach(t => {
-   if (!t.instrument) return;
+    // ❌ Ignore brokerage & invalid data
+    if (!t.instrument) return;
     if (t.instrument === "BROKERAGE") return;
-    const inst = t.instrument || "NIFTY"; // 👈 fallback for old trades
-    stats[inst].pnl += t.pnl;
-    stats[inst].trades += 1;
+    if (!instruments[t.instrument]) return;
+
+    instruments[t.instrument].trades += 1;
+    instruments[t.instrument].pnl += t.pnl;
+
+    if (t.pnl > 0) instruments[t.instrument].wins += 1;
+    if (t.pnl < 0) instruments[t.instrument].losses += 1;
   });
 
-  container.innerHTML = `
-    <div class="summary-box">
-      <div class="summary-label">NIFTY</div>
-      <div class="summary-value" style="color:${stats.NIFTY.pnl >= 0 ? '#16a34a' : '#dc2626'}">
-        ₹${stats.NIFTY.pnl}
-      </div>
-      <div style="font-size:12px;color:#6b7280">
-        ${stats.NIFTY.trades} trades
-      </div>
-    </div>
+  Object.entries(instruments).forEach(([name, data]) => {
+    if (data.trades === 0) return;
 
-    <div class="summary-box">
-      <div class="summary-label">SENSEX</div>
-      <div class="summary-value" style="color:${stats.SENSEX.pnl >= 0 ? '#16a34a' : '#dc2626'}">
-        ₹${stats.SENSEX.pnl}
+    const pnlClass = data.pnl >= 0 ? "profit" : "loss";
+    const sign = data.pnl >= 0 ? "₹" : "-₹";
+
+    container.innerHTML += `
+      <div class="instrument-card ${pnlClass}">
+        <div class="instrument-name">${name}</div>
+
+        <div class="instrument-pnl ${pnlClass}">
+          ${sign}${Math.abs(data.pnl).toLocaleString()}
+        </div>
+
+        <div class="instrument-trades">
+          ${data.trades} trades
+        </div>
+
+        <div class="instrument-wl">
+          ${data.wins}W / ${data.losses}L
+        </div>
       </div>
-      <div style="font-size:12px;color:#6b7280">
-        ${stats.SENSEX.trades} trades
-      </div>
-    </div>
-  `;
+    `;
+  });
 }
 
 function toggleSection(header){
@@ -1268,6 +1328,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
