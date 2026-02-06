@@ -541,34 +541,28 @@ th{background:#f8fafc}
   appearance: none;                 /* remove default arrow */
   -webkit-appearance: none;
   -moz-appearance: none;
-
   padding: 6px 34px 6px 10px;        /* space for arrow */
   font-size: 12px;
   border-radius: 6px;
   border: 1px solid #d1d5db;
   background-color: #fff;
   color: #111827;
-
   height: 30px;                     /* MATCH input height */
   width: 160px;
-
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' fill='gray' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5.5 7.5l4.5 4.5 4.5-4.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 14px;
 }
-
 /* Hover & focus polish */
 .select-input:hover {
   background-color: #f9fafb;
 }
-
 .select-input:focus {
   outline: none;
   border-color: #2563eb;
   box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.3);
 }
-
 /* Header row */
 .card-header {
   display: flex;
@@ -576,30 +570,25 @@ th{background:#f8fafc}
   align-items: center;
   cursor: pointer;
 }
-
 /* Chevron animation */
 .chevron {
   font-size: 18px;
   transition: transform 0.2s ease;
 }
-
 /* Body collapse animation */
 .card-body {
   overflow: hidden;
   transition: max-height 0.25s ease, opacity 0.2s ease;
 }
-
 /* Collapsed state */
 .collapsible.collapsed .card-body {
   max-height: 0;
   opacity: 0;
 }
-
 /* Rotate arrow */
 .collapsible.collapsed .chevron {
   transform: rotate(-90deg);
 }
-
   .instrument-card {
   flex: 1;
   background: #f9fafb;
@@ -607,93 +596,76 @@ th{background:#f8fafc}
   border-radius: 12px;
   padding: 16px;
 }
-
 .instrument-name {
   font-size: 13px;
   text-transform: uppercase;
   color: #6b7280;
   margin-bottom: 6px;
 }
-
 .instrument-pnl {
   font-size: 22px;
   font-weight: bold;
 }
-
 .instrument-pnl.profit {
   color: #16a34a;
 }
-
 .instrument-pnl.loss {
   color: #dc2626;
 }
-
 .instrument-trades {
   font-size: 13px;
   color: #374151;
   margin-top: 6px;
 }
-
 .instrument-wl {
   font-size: 12px;
   margin-top: 4px;
   color: #6b7280;
 }
-
   /* ===== Make Instrument card single-line ===== */
-
 .instrument-card {
   display: flex;
   align-items: center;
   gap: 14px;
 }
-
 .instrument-card > div {
   margin: 0 !important;
 }
-
 /* Net PnL bigger */
 .instrument-pnl {
   font-weight: bold;
   font-size: 18px;
 }
-
 /* Small meta text */
 .instrument-trades,
 .instrument-wl {
   font-size: 12px;
   color: #6b7280;
 }
-
 /* Optional separator look */
 .instrument-trades::before,
 .instrument-wl::before {
   content: "•";
   margin-right: 6px;
 }
-
 .instrument-wl .win {
   color: #16a34a; /* green */
   font-weight: 600;
 }
-
 .instrument-wl .loss {
   color: #dc2626; /* red */
   font-weight: 600;
 }
-
 /* Monthly Performance – bar value color sync */
 .month .bar-wrap .bar-value {
   font-weight: 600;
   margin-bottom: 6px;
 }
-
 /* Profit bar → green value */
 .month .bar-wrap .bar.profit + .bar-value,
 .month .bar-wrap .bar-value:has(+ .bar.profit) {
   color: #16a34a;
 }
-
 /* Loss bar → red value */
 .month .bar-wrap .bar.loss + .bar-value,
 .month .bar-wrap .bar-value:has(+ .bar.loss) {
@@ -701,24 +673,19 @@ th{background:#f8fafc}
 }
 
 /* ---- existing CSS (all your current styles) ---- */
-
-
 /* ===========================
    GLOBAL VISUAL POLISH
    =========================== */
-
 .summary-value,
 .net {
   font-size: 16px;
   letter-spacing: 0.2px;
 }
-
 .trade-count,
 .instrument-trades {
   font-size: 12px;
   opacity: 0.7;
 }
-
 /* Better numeric alignment */
 .summary-value,
 .bar-value,
@@ -726,119 +693,93 @@ th{background:#f8fafc}
 .net {
   font-variant-numeric: tabular-nums;
 }
-
 /* ===========================
    CARD DEPTH & BACKGROUND
    =========================== */
-
 .card {
   background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
   border: 1px solid #e5e7eb;
   box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
-
 /* ===========================
    COLLAPSIBLE HEADER POLISH
    =========================== */
-
 .card-header {
   transition: background 0.2s ease;
 }
-
 .card-header:hover {
   background: #f8fafc;
 }
-
 .chevron {
   transition: transform 0.25s ease;
 }
-
 .collapsed .chevron {
   transform: rotate(-90deg);
 }
-
 /* ===========================
    SUMMARY CARD – STRONG BOUNCE
    =========================== */
-
 .summary-box {
   transition:
     transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
     box-shadow 0.22s ease;
 }
-
 .summary-box:hover {
   transform: translateY(-5px) scale(1.02);
   box-shadow: 0 14px 28px rgba(0,0,0,0.12);
 }
-
 .summary-box:active {
   transform: scale(0.97);
 }
-
 /* ===========================
    INSTRUMENT CARD – SOFT HOVER
    =========================== */
-
 .instrument-card {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-
 .instrument-card:hover {
  transform: translateY(-5px) scale(1.02);
   box-shadow: 0 14px 28px rgba(0,0,0,0.12);
 }
-
 /* ===========================
    PROFIT / LOSS COLOR LANGUAGE
    =========================== */
-
 .profit {
   color: #16a34a;
 }
-
 .loss {
   color: #dc2626;
 }
-
 /* ===========================
    MONTHLY BAR – STRONG BOUNCE
    =========================== */
-
 .bar {
   transform-origin: bottom;
   animation: barBounce 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-
 /* Monthly bar hover (optional but nice) */
 .bar:hover {
   filter: brightness(1.08);
 }
-
 /* Bar value emphasis */
 .bar-value {
   font-weight: 600;
   margin-bottom: 6px;
 }
-
 /* ===========================
    MONTHLY BAR VALUE COLOR SYNC
    =========================== */
-
 /* Profit bar value → green */
 .month .bar-wrap .bar-value:has(+ .bar.profit) {
   color: #16a34a;
 }
-
 /* Loss bar value → red */
 .month .bar-wrap .bar-value:has(+ .bar.loss) {
   color: #dc2626;
 }
-
 /* ===========================
    ANIMATIONS
    =========================== */
-
 @keyframes barBounce {
   0%   { transform: scaleY(0); }
   60%  { transform: scaleY(1.05); }
@@ -848,7 +789,6 @@ th{background:#f8fafc}
 /* ===========================
    MONTHLY BAR – STRONG HOVER BOUNCE
    =========================== */
-
 .month .bar {
   transition:
     transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -864,28 +804,24 @@ th{background:#f8fafc}
 /* INDIVIDUAL BAR HOVER (even stronger) */
 .month .bar:hover {
 
-
 </style>
 </head>
-
+  
 <body>
+  
 <div class="container">
-
 <!-- ADD TRADE + PIE -->
 <div class="card">
 <h3>📝 Add Trade</h3>
 
 <div class="trade-layout">
-
   <!-- LEFT 50% -->
   <div class="trade-form">
-
     <div class="input-row">
       <div class="input-group">
         <label>Date</label>
         <input type="date" id="date" class="date-input">
       </div>
-
       <div class="input-group">
         <label>PnL</label>
         <input type="number" id="pnl" class="pnl-input" placeholder="+ / -">
@@ -900,11 +836,8 @@ th{background:#f8fafc}
     <option value="BROKERAGE">BROKERAGE</option>
   </select>
 </div>
-
-
-
-    <label style="margin-top:10px">Mistakes</label>
-  <div class="rules"> <label class="mistake-card bad">   <input type="checkbox" value="No Stop Loss"> No SL </label> 
+   <label style="margin-top:10px">Mistakes</label>
+   <div class="rules"> <label class="mistake-card bad">   <input type="checkbox" value="No Stop Loss"> No SL </label> 
    <label class="mistake-card bad">   <input type="checkbox" value="Free Channel with SL"> Free SL </label>
    <label class="mistake-card bad">  <input type="checkbox" value="FOMO Entry"> FOMO </label>
    <label class="mistake-card bad">   <input type="checkbox" value="Target 2 with SL"> T2 SL </label>
@@ -918,13 +851,10 @@ th{background:#f8fafc}
       <button class="save" onclick="saveTrade()">Save</button>
       <button class="export" onclick="exportCSV()">Export</button>
     </div>
-
   </div>
-
   <!-- RIGHT 50% -->
   <div class="trade-chart">
   <div style="display:flex; gap:24px; align-items:flex-end">
-
     <!-- PIE -->
     <div>
       <h3>Profit & Loss Distribution</h3>
@@ -932,17 +862,13 @@ th{background:#f8fafc}
         <canvas id="lossPie"></canvas>
       </div>
     </div>
-
     <!-- HEATMAP -->
     <div>
       <h3>Mistake Impact (₹)</h3>
       <div class="heatmap" id="mistakeHeatmap"></div>
     </div>
-
   </div>
 </div>
-
-
 </div>
 </div>
 
@@ -952,19 +878,16 @@ th{background:#f8fafc}
     <h3>🧾 Summary</h3>
     <span class="chevron">▾</span>
   </div>
-
   <div class="card-body">
     <div class="summary-cards">
       <div class="summary-box profit-box">
         <div class="summary-label">Total Profit</div>
         <div class="summary-value" id="profit">₹0</div>
       </div>
-
       <div class="summary-box loss-box">
         <div class="summary-label">Total Loss</div>
         <div class="summary-value" id="loss">₹0</div>
       </div>
-
       <div class="summary-box net-box">
         <div class="summary-label">Net P&amp;L</div>
         <div class="summary-value" id="net">₹0</div>
@@ -979,7 +902,6 @@ th{background:#f8fafc}
     <h3>📊 Monthly Performance</h3>
     <span class="chevron">▾</span>
   </div>
-
   <div class="card-body">
     <div id="monthlyGrid" class="monthly-grid"></div>
   </div>
@@ -990,7 +912,6 @@ th{background:#f8fafc}
     <h3>📈 Instrument Performance</h3>
     <span class="chevron">▾</span>
   </div>
-
   <div class="card-body">
     <div id="instrumentStats" style="display:flex; gap:24px;"></div>
   </div>
@@ -1004,7 +925,6 @@ th{background:#f8fafc}
   <span id="calendarTitle"></span>
   <button onclick="changeMonth(1)">▶</button>
 </div>
-
 <div class="calendar" id="calendar"></div>
 </div>
 
@@ -1018,14 +938,11 @@ th{background:#f8fafc}
 <tbody id="drillBody"></tbody>
 </table>
 </div>
-
 </div>
-
 <script>
 
 let currentMonth = new Date().getMonth();
 let currentYear  = new Date().getFullYear();
-
 let db, lossChart;
 const mistakeColorMap = {
   "No Stop Loss": "#dc2626",
@@ -1057,11 +974,8 @@ function saveTrade() {
     alert("Date & PnL required");
     return;
   }
-
-  // 🔒 HARD COLLECTION (no assumptions)
   const ruleNodes = document.querySelectorAll(".rules input[type=checkbox]");
   const rules = [];
-
   ruleNodes.forEach(cb => {
     if (cb.checked) {
       rules.push(cb.value);
@@ -1069,7 +983,6 @@ function saveTrade() {
   });
 
 const isBrokerage = rules.includes("BROKERAGE");
-
   const trade = {
     date: dateValue,
     pnl: pnlValue,
@@ -1078,11 +991,8 @@ const isBrokerage = rules.includes("BROKERAGE");
    instrument: instrumentValue 
   };
 
-  console.log("✅ SAVED TRADE:", trade);
-
   const tx = db.transaction("trades", "readwrite");
   tx.objectStore("trades").add(trade);
-
   tx.oncomplete = () => {
     clearForm();
     loadAll();
@@ -1095,9 +1005,7 @@ function loadAll(){
     .objectStore("trades")
     .getAll()
     .onsuccess = e => {
-
-      const trades = e.target.result;   // ⭐ ADD THIS LINE
-
+      const trades = e.target.result;   
       updateSummary(trades);
       buildMonthlyPerformance(trades);
       buildCalendar(trades);
@@ -1110,38 +1018,29 @@ function loadAll(){
 /* SUMMARY */
 function updateSummary(t){
   let p = 0, l = 0;
-
   t.forEach(x => {
     if (x.pnl > 0) p += x.pnl;
     if (x.pnl < 0) l += Math.abs(x.pnl);
   });
-
   const netValue = p - l;
-
   profit.innerText = "₹" + p;
   loss.innerText   = "₹" + l;
   net.innerText    = (netValue >= 0 ? "₹" : "-₹") + Math.abs(netValue);
-
-  // ✅ THIS is the only new logic
   net.style.color = netValue >= 0 ? "#16a34a" : "#dc2626";
 }
+  
 /* CALENDAR */
 function buildCalendar(t){
   calendar.innerHTML = "";
-
  const y = currentYear;
  const m = currentMonth;
-
 document.getElementById("calendarTitle").innerText =
   new Date(y, m).toLocaleString("default", {
     month: "long",
     year: "numeric"
   });
-
-
   const first = new Date(y, m, 1).getDay() || 7;
   const days  = new Date(y, m + 1, 0).getDate();
-
   const map = {};
   t.forEach(x => {
     map[x.date] = (map[x.date] || []).concat(x);
@@ -1149,15 +1048,12 @@ document.getElementById("calendarTitle").innerText =
 
   ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
     .forEach(h => calendar.innerHTML += `<div class="day-header">${h}</div>`);
-
   for (let i = 1; i < first; i++) {
     calendar.innerHTML += `<div></div>`;
   }
-
   for (let i = 1; i <= days; i++) {
     const ds = `${y}-${String(m+1).padStart(2,"0")}-${String(i).padStart(2,"0")}`;
     const list = map[ds] || [];
-
     if (list.length === 0) {
       calendar.innerHTML += `
         <div class="day neutral">
@@ -1166,24 +1062,19 @@ document.getElementById("calendarTitle").innerText =
         </div>`;
       continue;
     }
-
     let pnl = 0, wins = 0, losses = 0;
-
     list.forEach(x => {
       pnl += x.pnl;
       if (x.isBrokerage) return; 
       if (x.pnl > 0) wins++;
       if (x.pnl < 0) losses++;
     });
-
     const colorClass = pnl >= 0 ? "green" : "red";
 
     calendar.innerHTML += `
       <div class="day ${colorClass}" onclick="openDay('${ds}')">
         <div class="day-date">${i}</div>
-
         <div class="day-pnl">₹${pnl}</div>
-
         <div class="day-details">
           ${list.filter(t => !t.isBrokerage).length} trades<br>
           ${wins}W / ${losses}L
@@ -1194,28 +1085,21 @@ document.getElementById("calendarTitle").innerText =
 
 function buildMonthlyPerformance(trades){
   const grid = document.getElementById("monthlyGrid");
-
   if (!grid) {
     console.warn("❌ monthlyGrid not found");
     return;
   }
-
   if (!Array.isArray(trades) || trades.length === 0) {
     console.warn("❌ No trades for monthly chart");
     grid.innerHTML = "<div style='color:#6b7280'>No data</div>";
     return;
   }
-
   grid.innerHTML = "";
-
   const monthMap = {};
-
   trades.forEach(t => {
     if (!t.date || typeof t.pnl !== "number") return;
-
     const d = new Date(t.date);
     const key = `${d.getFullYear()}-${d.getMonth()}`;
-
     if (!monthMap[key]) {
       monthMap[key] = {
         label: d.toLocaleString("default",{month:"short",year:"numeric"}),
@@ -1224,17 +1108,13 @@ function buildMonthlyPerformance(trades){
         loss: 0
       };
     }
-
     if (!t.isBrokerage) {
     monthMap[key].trades++;   
     }
-
     if (t.pnl > 0) monthMap[key].profit += t.pnl;
     if (t.pnl < 0) monthMap[key].loss += Math.abs(t.pnl);
   });
-
   const months = Object.values(monthMap);
-
   if (!months.length) {
     grid.innerHTML = "<div style='color:#6b7280'>No monthly data</div>";
     return;
@@ -1253,19 +1133,15 @@ function buildMonthlyPerformance(trades){
     grid.innerHTML += `
       <div class="month">
         <div class="bar-area">
-
           <div class="bar-wrap">
             ${m.profit ? `<div class="bar-value">₹${m.profit.toLocaleString()}</div>` : ``}
             <div class="bar profit" style="height:${profitHeight}%"></div>
           </div>
-
           <div class="bar-wrap">
             ${m.loss ? `<div class="bar-value">₹${m.loss.toLocaleString()}</div>` : ``}
             <div class="bar loss" style="height:${lossHeight}%"></div>
           </div>
-
         </div>
-
         <div class="month-label">${m.label}</div>
         <div class="trade-count">${m.trades} trades</div>
         <div class="net ${net >= 0 ? "profit" : "loss"}">
@@ -1320,13 +1196,10 @@ function openDay(selectedDate) {
 /* PIE */
 function buildLossPie(trades) {
   const impactByMistake = {};
-
   trades.forEach(t => {
     if (t.isBrokerage) return;
     if (!t.rules || t.rules.length === 0) return;
-
     const impact = Math.abs(t.pnl); // profit + loss
-
     t.rules.forEach(rule => {
       impactByMistake[rule] =
         (impactByMistake[rule] || 0) + impact;
@@ -1338,30 +1211,20 @@ function buildLossPie(trades) {
     window.lossChart.destroy();
     window.lossChart = null;
   }
-
   const labels = Object.keys(impactByMistake);
   const data = Object.values(impactByMistake);
-
   if (labels.length === 0) return;
-
-  // ✅ Behavior-based color mapping (order safe)
+  
   const colorMap = {
-  /* ❌ BAD / HIGH RISK */
-  "No Stop Loss": "#dc2626",            // deep red – capital protection failure
-  "Target 2 with SL": "#b91c1c",         // dark red – greed (should exit at T1)
-  "FOMO Entry": "#f59e0b",               // amber – emotional entry
-  /* ⚠️ NOT IDEAL / EXTERNAL */
-  "Free Channel with SL": "#fb923c",     // orange – external dependency (some control)
-  "Free Channel Target Hit": "#ea580c",  // orange – profit but not own setup
-  /* 🟦 DISCIPLINED LOSS */
-  "Stop Loss Hit": "#60a5fa",            // blue – rule-based loss
-  /* ✅ GOOD / DISCIPLINED */
-  "Target 1 Hit": "#22c55e"             // green – correct execution
+  "No Stop Loss": "#dc2626",            
+  "Target 2 with SL": "#b91c1c",        
+  "FOMO Entry": "#f59e0b",              
+  "Free Channel with SL": "#fb923c",    
+  "Free Channel Target Hit": "#ea580c", 
+  "Stop Loss Hit": "#60a5fa",           
+  "Target 1 Hit": "#22c55e"             
   };
-
-
   const colors = labels.map(l => colorMap[l] || "#94a3b8");
-
   const ctx = document.getElementById("lossPie").getContext("2d");
 
   window.lossChart = new Chart(ctx, {
@@ -1398,17 +1261,12 @@ function buildLossPie(trades) {
 function buildMistakeHeatmap(trades) {
   const container = document.getElementById("mistakeHeatmap");
   if (!container) return;
-
   container.innerHTML = "";
-
   const impactByMistake = {};
-
   trades.forEach(t => {
     if (t.isBrokerage) return;
     if (!t.rules || !t.rules.length) return;
-
     const impact = Math.abs(t.pnl);
-
     t.rules.forEach(rule => {
       impactByMistake[rule] =
         (impactByMistake[rule] || 0) + impact;
@@ -1418,11 +1276,8 @@ function buildMistakeHeatmap(trades) {
   const entries = Object.entries(impactByMistake)
     .sort((a,b) => b[1] - a[1])
     .slice(0,5);
-
   if (!entries.length) return;
-
   const max = entries[0][1];
-
   entries.forEach(([mistake, value]) => {
     const height = (value / max) * 100;
     const color = mistakeColorMap[mistake] || "#94a3b8";
@@ -1434,7 +1289,6 @@ function buildMistakeHeatmap(trades) {
       .replace("Free Channel Target Hit","Free T1")
       .replace("Stop Loss Hit","SL Hit")
       .replace("Target 1 Hit","T1 Hit");
-
     container.innerHTML += `
       <div class="bar-col">
         <div class="bar" style="height:${height}%; background:${color}"></div>
@@ -1444,7 +1298,6 @@ function buildMistakeHeatmap(trades) {
     `;
   });
 }
-
 
 /* EXPORT */
 function exportCSV(){
@@ -1467,26 +1320,21 @@ function clearForm(){
 
 function changeMonth(delta){
   currentMonth += delta;
-
   if (currentMonth < 0) {
     currentMonth = 11;
     currentYear--;
   }
-
   if (currentMonth > 11) {
     currentMonth = 0;
     currentYear++;
   }
-
   loadAll();  
 }
 
 function buildInstrumentPerformance(trades) {
   const container = document.getElementById("instrumentStats");
   if (!container) return;
-
   container.innerHTML = "";
-
   const instruments = {
     NIFTY: {
       pnl: 0,
@@ -1507,32 +1355,25 @@ function buildInstrumentPerformance(trades) {
     if (!t.instrument) return;
     if (t.instrument === "BROKERAGE") return;
     if (!instruments[t.instrument]) return;
-
     instruments[t.instrument].trades += 1;
     instruments[t.instrument].pnl += t.pnl;
-
     if (t.pnl > 0) instruments[t.instrument].wins += 1;
     if (t.pnl < 0) instruments[t.instrument].losses += 1;
   });
 
   Object.entries(instruments).forEach(([name, data]) => {
     if (data.trades === 0) return;
-
     const pnlClass = data.pnl >= 0 ? "profit" : "loss";
     const sign = data.pnl >= 0 ? "₹" : "-₹";
-
     container.innerHTML += `
       <div class="instrument-card ${pnlClass}">
         <div class="instrument-name">${name}</div>
-
         <div class="instrument-pnl ${pnlClass}">
           ${sign}${Math.abs(data.pnl).toLocaleString()}
         </div>
-
         <div class="instrument-trades">
           ${data.trades} trades
         </div>
-
         <div class="instrument-wl">
           <span class="win">${data.wins}W</span> /
           <span class="loss">${data.losses}L</span>
@@ -1551,16 +1392,5 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js");
 }
 </script>
-
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
