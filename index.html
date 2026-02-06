@@ -672,6 +672,15 @@ th{background:#f8fafc}
   margin-right: 6px;
 }
 
+.instrument-wl .win {
+  color: #16a34a; /* green */
+  font-weight: 600;
+}
+
+.instrument-wl .loss {
+  color: #dc2626; /* red */
+  font-weight: 600;
+}
 
 </style>
 </head>
@@ -1341,7 +1350,8 @@ function buildInstrumentPerformance(trades) {
         </div>
 
         <div class="instrument-wl">
-          ${data.wins}W / ${data.losses}L
+          <span class="win">${data.wins}W</span> /
+          <span class="loss">${data.losses}L</span>
         </div>
       </div>
     `;
@@ -1360,6 +1370,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
