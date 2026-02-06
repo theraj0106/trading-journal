@@ -700,6 +700,171 @@ th{background:#f8fafc}
   color: #dc2626;
 }
 
+/* ---- existing CSS (all your current styles) ---- */
+
+
+/* ===========================
+   GLOBAL VISUAL POLISH
+   =========================== */
+
+.summary-value,
+.net {
+  font-size: 16px;
+  letter-spacing: 0.2px;
+}
+
+.trade-count,
+.instrument-trades {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* Better numeric alignment */
+.summary-value,
+.bar-value,
+.instrument-pnl,
+.net {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===========================
+   CARD DEPTH & BACKGROUND
+   =========================== */
+
+.card {
+  background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+/* ===========================
+   COLLAPSIBLE HEADER POLISH
+   =========================== */
+
+.card-header {
+  transition: background 0.2s ease;
+}
+
+.card-header:hover {
+  background: #f8fafc;
+}
+
+.chevron {
+  transition: transform 0.25s ease;
+}
+
+.collapsed .chevron {
+  transform: rotate(-90deg);
+}
+
+/* ===========================
+   SUMMARY CARD – STRONG BOUNCE
+   =========================== */
+
+.summary-box {
+  transition:
+    transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.22s ease;
+}
+
+.summary-box:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 14px 28px rgba(0,0,0,0.12);
+}
+
+.summary-box:active {
+  transform: scale(0.97);
+}
+
+/* ===========================
+   INSTRUMENT CARD – SOFT HOVER
+   =========================== */
+
+.instrument-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.instrument-card:hover {
+ transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 14px 28px rgba(0,0,0,0.12);
+}
+
+/* ===========================
+   PROFIT / LOSS COLOR LANGUAGE
+   =========================== */
+
+.profit {
+  color: #16a34a;
+}
+
+.loss {
+  color: #dc2626;
+}
+
+/* ===========================
+   MONTHLY BAR – STRONG BOUNCE
+   =========================== */
+
+.bar {
+  transform-origin: bottom;
+  animation: barBounce 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Monthly bar hover (optional but nice) */
+.bar:hover {
+  filter: brightness(1.08);
+}
+
+/* Bar value emphasis */
+.bar-value {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* ===========================
+   MONTHLY BAR VALUE COLOR SYNC
+   =========================== */
+
+/* Profit bar value → green */
+.month .bar-wrap .bar-value:has(+ .bar.profit) {
+  color: #16a34a;
+}
+
+/* Loss bar value → red */
+.month .bar-wrap .bar-value:has(+ .bar.loss) {
+  color: #dc2626;
+}
+
+/* ===========================
+   ANIMATIONS
+   =========================== */
+
+@keyframes barBounce {
+  0%   { transform: scaleY(0); }
+  60%  { transform: scaleY(1.05); }
+  100% { transform: scaleY(1); }
+}
+
+/* ===========================
+   MONTHLY BAR – STRONG HOVER BOUNCE
+   =========================== */
+
+.month .bar {
+  transition:
+    transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
+    filter 0.18s ease;
+  transform-origin: bottom;
+}
+
+/* HOVER BOUNCE */
+.month:hover .bar {
+  transform: scaleY(1.15);
+}
+
+/* INDIVIDUAL BAR HOVER (even stronger) */
+.month .bar:hover {
+
+
 </style>
 </head>
 
@@ -1205,7 +1370,8 @@ function buildLossPie(trades) {
       labels,
       datasets: [{
         data,
-        backgroundColor: labels.map(l => mistakeColorMap[l] || "#94a3b8")
+        backgroundColor: labels.map(l => mistakeColorMap[l] || "#94a3b8"),
+        hoverOffset: 16 
       }]
     },
     options: {
@@ -1388,6 +1554,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
