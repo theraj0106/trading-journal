@@ -682,6 +682,24 @@ th{background:#f8fafc}
   font-weight: 600;
 }
 
+/* Monthly Performance – bar value color sync */
+.month .bar-wrap .bar-value {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* Profit bar → green value */
+.month .bar-wrap .bar.profit + .bar-value,
+.month .bar-wrap .bar-value:has(+ .bar.profit) {
+  color: #16a34a;
+}
+
+/* Loss bar → red value */
+.month .bar-wrap .bar.loss + .bar-value,
+.month .bar-wrap .bar-value:has(+ .bar.loss) {
+  color: #dc2626;
+}
+
 </style>
 </head>
 
@@ -1370,6 +1388,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
