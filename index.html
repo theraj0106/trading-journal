@@ -640,6 +640,38 @@ th{background:#f8fafc}
   color: #6b7280;
 }
 
+  /* ===== Make Instrument card single-line ===== */
+
+.instrument-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.instrument-card > div {
+  margin: 0 !important;
+}
+
+/* Net PnL bigger */
+.instrument-pnl {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* Small meta text */
+.instrument-trades,
+.instrument-wl {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Optional separator look */
+.instrument-trades::before,
+.instrument-wl::before {
+  content: "•";
+  margin-right: 6px;
+}
+
 
 </style>
 </head>
@@ -1328,6 +1360,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
