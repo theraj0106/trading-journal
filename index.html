@@ -1033,19 +1033,31 @@ function loadAll(){
 }
 
 /* SUMMARY */
-function updateSummary(t){
-  let p = 0, l = 0;
-  t.forEach(x => {
-    if (x.pnl > 0) p += x.pnl;
-    if (x.pnl < 0) l += Math.abs(x.pnl);
+function updateSummary(trades) {
+  let profit = 0;
+  let loss = 0;
+  let taxes = 0;
+  trades.forEach(t => {
+    // Brokerage → goes to Taxes
+    if (t.isBrokerage) {
+      taxes += Math.abs(t.pnl);
+      return;
+    }
+    // Normal trades
+    if (t.pnl > 0) profit += t.pnl;
+    if (t.pnl < 0) loss += Math.abs(t.pnl);
   });
-  const netValue = p - l;
-  profit.innerText = "₹" + p;
-  loss.innerText   = "₹" + l;
-  net.innerText    = (netValue >= 0 ? "₹" : "-₹") + Math.abs(netValue);
-  net.style.color = netValue >= 0 ? "#16a34a" : "#dc2626";
+
+  const net = profit - loss - taxes;
+  document.getElementById("profit").innerText = "₹" + profit.toLocaleString();
+  document.getElementById("loss").innerText = "₹" + loss.toLocaleString();
+  document.getElementById("taxes").innerText = "₹" + taxes.toLocaleString();
+  document.getElementById("net").innerText =
+    (net >= 0 ? "₹" : "-₹") + Math.abs(net).toLocaleString();
+  document.getElementById("net").style.color =
+    net >= 0 ? "#16a34a" : "#dc2626";
 }
-  
+    
 /* CALENDAR */
 function buildCalendar(t){
   calendar.innerHTML = "";
@@ -1520,6 +1532,7 @@ if ("serviceWorker" in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
