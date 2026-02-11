@@ -802,6 +802,10 @@ th,td{
 /* INDIVIDUAL BAR HOVER (even stronger) */
 .month .bar:hover {
 
+.tax-box .summary-value {
+  color: #b45309;   /* amber */
+}
+
 </style>
 </head>
   
@@ -885,6 +889,10 @@ th,td{
       <div class="summary-box loss-box">
         <div class="summary-label">Total Loss</div>
         <div class="summary-value" id="loss">₹0</div>
+      </div>
+      <div class="summary-box tax-box">
+  	    <div class="summary-label">Taxes / Brokerage</div>
+  	    <div class="summary-value" id="taxes">₹0</div>
       </div>
       <div class="summary-box net-box">
         <div class="summary-label">Net P&amp;L</div>
@@ -1512,6 +1520,7 @@ if ("serviceWorker" in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
