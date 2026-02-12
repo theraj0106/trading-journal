@@ -1402,15 +1402,27 @@ function buildMistakeHeatmap(trades) {
 
 /* EXPORT */
 function exportCSV(){
-  db.transaction("trades","readonly").objectStore("trades").getAll().onsuccess=e=>{
-    let csv="Date,PnL,Mistakes\n";
-    e.target.result.forEach(x=>csv+=`${x.date},${x.pnl},"${x.rules.join(", ")}"\n`);
-    const a=document.createElement("a");
-    a.href=URL.createObjectURL(new Blob([csv]));
-    a.download="trading-journal.csv";
-    a.click();
-  };
+  db.transaction("trades","readonly")
+    .objectStore("trades")
+    .getAll()
+    .onsuccess = e => {
+      let csv = "Date,Instrument,PnL,Mistakes\n";
+      e.target.result.forEach(x => {
+        const instrument = x.instrument || "";
+        const mistakes = Array.isArray(x.rules) && x.rules.length
+          ? x.rules.join(", ")
+          : "";
+
+        csv += `${x.date},${instrument},${x.pnl},"${mistakes}"\n`;
+      });
+      const blob = new Blob([csv], { type: "text/csv" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "trading-journal.csv";
+      a.click();
+    };
 }
+
 
 /* HELPERS */
 const pnlEl=()=>document.getElementById("pnl");
@@ -1605,6 +1617,7 @@ if ("serviceWorker" in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
