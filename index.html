@@ -1092,11 +1092,12 @@ document.getElementById("calendarTitle").innerText =
       continue;
     }
     let pnl = 0, wins = 0, losses = 0;
+    
     list.forEach(x => {
-      pnl += x.pnl;
-      if (x.isBrokerage) return; 
-      if (x.pnl > 0) wins++;
-      if (x.pnl < 0) losses++;
+    if (x.isBrokerage) return;
+    pnl += x.pnl;
+    if (x.pnl > 0) wins++;
+    if (x.pnl < 0) losses++;
     });
     const colorClass = pnl >= 0 ? "green" : "red";
 
@@ -1559,6 +1560,7 @@ if ("serviceWorker" in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
