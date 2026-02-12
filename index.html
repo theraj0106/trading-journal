@@ -1197,6 +1197,7 @@ if (t.pnl < 0) monthMap[key].loss += Math.abs(t.pnl);
 
 /* DRILL */
 function openDay(selectedDate) {
+
   const drill = document.getElementById("drill");
   const drillTitle = document.getElementById("drillTitle");
   const drillBody = document.getElementById("drillBody");
@@ -1210,26 +1211,41 @@ function openDay(selectedDate) {
   const req = store.getAll();
 
   req.onsuccess = () => {
-    req.result
+
+    const filtered = req.result
       .filter(t => t.date === selectedDate)
-      .forEach(t => {
-        drillBody.innerHTML += `
-      <tr>
-        <td class="pnl-col pnl ${t.pnl < 0 ? 'loss' : 'profit'}">
-          ${t.pnl >= 0 ? "₹" + t.pnl : "-₹" + Math.abs(t.pnl)}
-      </td>
-      <td>
-        ${
-          Array.isArray(t.rules) && t.rules.length
-            ? `<span class="mistake ${t.pnl < 0 ? 'loss' : ''}">
-               ${t.rules.join(", ")}
-             </span>`
-          : "-"
-        }
-    </td>
-  </tr>
-`;
-      });
+      .filter(t => !t.isBrokerage);   // 🔥 remove brokerage here
+
+    if (!filtered.length) {
+      drillBody.innerHTML = `
+        <tr>
+          <td colspan="2" style="color:#6b7280;padding:12px;">
+            No Trading Entries
+          </td>
+        </tr>`;
+      return;
+    }
+
+    filtered.forEach(t => {
+
+      drillBody.innerHTML += `
+        <tr>
+          <td class="pnl-col pnl ${t.pnl < 0 ? 'loss' : 'profit'}">
+            ${t.pnl >= 0 ? "₹" + t.pnl : "-₹" + Math.abs(t.pnl)}
+          </td>
+
+          <td>
+            ${
+              Array.isArray(t.rules) && t.rules.length
+                ? `<span class="mistake ${t.pnl < 0 ? 'loss' : ''}">
+                     ${t.rules.join(", ")}
+                   </span>`
+                : "-"
+            }
+          </td>
+        </tr>
+      `;
+    });
   };
 }
 
@@ -1543,6 +1559,7 @@ if ("serviceWorker" in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
