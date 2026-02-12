@@ -1129,19 +1129,30 @@ function buildMonthlyPerformance(trades){
     if (!t.date || typeof t.pnl !== "number") return;
     const d = new Date(t.date);
     const key = `${d.getFullYear()}-${d.getMonth()}`;
-    if (!monthMap[key]) {
-      monthMap[key] = {
-        label: d.toLocaleString("default",{month:"short",year:"numeric"}),
-        trades: 0,
-        profit: 0,
-        loss: 0
-      };
-    }
-    if (!t.isBrokerage) {
-    monthMap[key].trades++;   
-    }
-    if (t.pnl > 0) monthMap[key].profit += t.pnl;
-    if (t.pnl < 0) monthMap[key].loss += Math.abs(t.pnl);
+    
+  if (!monthMap[key]) {
+  monthMap[key] = {
+    label: d.toLocaleString("default",{month:"short",year:"numeric"}),
+    trades: 0,
+    profit: 0,
+    loss: 0,
+    taxes: 0   // 🔥 new
+  };
+}
+
+// Brokerage → taxes only
+if (t.isBrokerage) {
+  monthMap[key].taxes += Math.abs(t.pnl);
+  return;
+}
+
+// Normal trades
+monthMap[key].trades++;
+
+if (t.pnl > 0) monthMap[key].profit += t.pnl;
+if (t.pnl < 0) monthMap[key].loss += Math.abs(t.pnl);
+   
+    
   });
   const months = Object.values(monthMap);
   if (!months.length) {
@@ -1532,6 +1543,7 @@ if ("serviceWorker" in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
