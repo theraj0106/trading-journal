@@ -898,6 +898,14 @@ th,td{
         <div class="summary-label">Net P&amp;L</div>
         <div class="summary-value" id="net">₹0</div>
       </div>
+      <div class="summary-box">
+        <div class="summary-label">Gross Expectancy</div>
+        <div class="summary-value" id="grossExpectancy">₹0</div>
+      </div>
+      <div class="summary-box">
+        <div class="summary-label">Net Expectancy</div>
+        <div class="summary-value" id="netExpectancy">₹0</div>
+      </div>
     </div>
   </div>
 </div>
@@ -1033,30 +1041,67 @@ function loadAll(){
 }
 
 /* SUMMARY */
-function updateSummary(trades) {
+function updateSummary(trades){
+
   let profit = 0;
   let loss = 0;
   let taxes = 0;
+  let tradeCount = 0;
+
   trades.forEach(t => {
-    // Brokerage → goes to Taxes
+
     if (t.isBrokerage) {
       taxes += Math.abs(t.pnl);
       return;
     }
-    // Normal trades
+
+    tradeCount++;
+
     if (t.pnl > 0) profit += t.pnl;
     if (t.pnl < 0) loss += Math.abs(t.pnl);
   });
 
-  const net = profit - loss - taxes;
+  const grossNet = profit - loss;
+  const finalNet = grossNet - taxes;
+
+  // ---- EXISTING VALUES ----
   document.getElementById("profit").innerText = "₹" + profit.toLocaleString();
   document.getElementById("loss").innerText = "₹" + loss.toLocaleString();
   document.getElementById("taxes").innerText = "₹" + taxes.toLocaleString();
+
   document.getElementById("net").innerText =
-    (net >= 0 ? "₹" : "-₹") + Math.abs(net).toLocaleString();
+    (finalNet >= 0 ? "₹" : "-₹") + Math.abs(finalNet).toLocaleString();
+
   document.getElementById("net").style.color =
-    net >= 0 ? "#16a34a" : "#dc2626";
+    finalNet >= 0 ? "#16a34a" : "#dc2626";
+
+  // ---- EXPECTANCY ----
+  const grossExpectancy =
+    tradeCount === 0 ? 0 : grossNet / tradeCount;
+
+  const netExpectancy =
+    tradeCount === 0 ? 0 : finalNet / tradeCount;
+
+  const grossEl = document.getElementById("grossExpectancy");
+  const netEl   = document.getElementById("netExpectancy");
+
+  grossEl.innerText =
+    (grossExpectancy >= 0 ? "₹" : "-₹") +
+    Math.abs(Math.round(grossExpectancy)).toLocaleString() +
+    " / trade";
+
+  netEl.innerText =
+    (netExpectancy >= 0 ? "₹" : "-₹") +
+    Math.abs(Math.round(netExpectancy)).toLocaleString() +
+    " / trade";
+
+  grossEl.style.color =
+    grossExpectancy >= 0 ? "#16a34a" : "#dc2626";
+
+  netEl.style.color =
+    netExpectancy >= 0 ? "#16a34a" : "#dc2626";
 }
+
     
 /* CALENDAR */
 function buildCalendar(t){
@@ -1560,6 +1605,7 @@ if ("serviceWorker" in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
