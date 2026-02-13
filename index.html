@@ -889,7 +889,7 @@ th,td{
         <div class="summary-label">Total Loss</div>
         <div class="summary-value" id="loss">₹0</div>
       </div>
-      <div class="summary-box tax-box">
+      <div class="summary-box tax-box" onclick="openTaxesDrill()">
   	    <div class="summary-label">Taxes / Brokerage</div>
   	    <div class="summary-value" id="taxes">₹0</div>
       </div>
@@ -961,6 +961,22 @@ th,td{
 <tbody id="drillBody"></tbody>
 </table>
 </div>
+
+<div class="card hidden" id="taxDrill">
+  <h3>💸 Brokerage Details</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Amount</th>
+        <th>Instrument</th>
+      </tr>
+    </thead>
+    <tbody id="taxDrillBody"></tbody>
+  </table>
+</div>
+
+  
 </div>
 <script>
 
@@ -1608,6 +1624,45 @@ function buildWeekdaySuccessRate(trades) {
   });
 }
 
+function openTaxesDrill() {
+  const drill = document.getElementById("taxDrill");
+  const body  = document.getElementById("taxDrillBody");
+
+  drill.classList.remove("hidden");
+  body.innerHTML = "";
+
+  const tx = db.transaction("trades", "readonly");
+  const store = tx.objectStore("trades");
+  const req = store.getAll();
+
+  req.onsuccess = () => {
+    const brokerageTrades = req.result
+      .filter(t => t.isBrokerage === true)
+      .sort((a,b) => new Date(b.date) - new Date(a.date));
+
+    if (!brokerageTrades.length) {
+      body.innerHTML = `
+        <tr>
+          <td colspan="3" style="color:#6b7280;">
+            No brokerage entries
+          </td>
+        </tr>`;
+      return;
+    }
+
+    brokerageTrades.forEach(t => {
+      body.innerHTML += `
+        <tr>
+          <td>${t.date}</td>
+          <td class="loss">-₹${Math.abs(t.pnl).toLocaleString()}</td>
+          <td>${t.instrument || "-"}</td>
+        </tr>
+      `;
+    });
+  };
+}
+
+
 function toggleSection(header){
   const card = header.closest(".collapsible");
   card.classList.toggle("collapsed");
@@ -1619,6 +1674,7 @@ if ("serviceWorker" in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
