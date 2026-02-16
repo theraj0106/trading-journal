@@ -851,6 +851,17 @@ th,td{
   color: #9ca3af;
 }
 
+.streak-badge{
+  position:absolute;
+  top:6px;
+  left:6px;
+  background:#111827;
+  color:#fff;
+  font-size:11px;
+  padding:2px 6px;
+  border-radius:20px;
+  font-weight:600;
+}
 
 </style>
 </head>
@@ -1187,7 +1198,8 @@ function updateSummary(trades){
     
 /* CALENDAR */
 function buildCalendar(t){
-  calendar.innerHTML = "";
+ const streakMap = calculateWinningStreaks(trades);
+ calendar.innerHTML = "";
  const y = currentYear;
  const m = currentMonth;
 document.getElementById("calendarTitle").innerText =
@@ -1230,6 +1242,7 @@ document.getElementById("calendarTitle").innerText =
 
     calendar.innerHTML += `
       <div class="day ${colorClass}" onclick="openDay('${ds}')">
+      ${streakMap[ds] ? `<div class="streak-badge">🔥${streakMap[ds]}</div>` : ""}
         <div class="day-date">${i}</div>
         <div class="day-pnl">₹${pnl}</div>
         <div class="day-details">
@@ -1778,6 +1791,36 @@ function buildMistakeAnalysis(trades) {
 });
 }
 
+function calculateWinningStreaks(trades) {
+  const dailyNet = {};
+  // Build daily net (exclude brokerage)
+  trades.forEach(t => {
+    if (t.isBrokerage) return;
+    dailyNet[t.date] = (dailyNet[t.date] || 0) + t.pnl;
+  });
+  // Sort dates ascending
+  const sortedDates = Object.keys(dailyNet)
+    .sort((a,b) => new Date(a) - new Date(b));
+  const streakMap = {};
+  let streak = 0;
+  sortedDates.forEach(date => {
+    const pnl = dailyNet[date];
+    if (pnl >= 1000) {
+      streak++;
+    }
+    else if (pnl < 0) {
+      streak = 0;
+    }
+    else {
+      // small profit but below threshold
+      streak = 0;
+    }
+    if (streak > 1) {   // show only meaningful streaks
+      streakMap[date] = streak;
+    }
+  });
+  return streakMap;
+}
 
 function toggleSection(header){
   const card = header.closest(".collapsible");
@@ -1790,6 +1833,7 @@ if ("serviceWorker" in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
