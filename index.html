@@ -853,11 +853,11 @@ th,td{
 
 .streak-badge{
   position:absolute;
-  top:6px;
-  left:6px;
-  background:#111827;
+  top:56px;
+  left:4px;
+  background:#1350d5;
   color:#fff;
-  font-size:11px;
+  font-size:10px;
   padding:2px 6px;
   border-radius:20px;
   font-weight:600;
@@ -1198,7 +1198,7 @@ function updateSummary(trades){
     
 /* CALENDAR */
 function buildCalendar(t){
- const streakMap = calculateWinningStreaks(trades);
+ const streakMap = calculateWinningStreaks(t);
  calendar.innerHTML = "";
  const y = currentYear;
  const m = currentMonth;
@@ -1833,6 +1833,7 @@ if ("serviceWorker" in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
