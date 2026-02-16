@@ -966,6 +966,25 @@ th,td{
   </div>
 </div>
 
+<!-- Mistake Analysis -->
+<!-- MISTAKE ANALYSIS -->
+<div class="card collapsible collapsed">
+  <div class="card-header" onclick="toggleSection(this)">
+    <h3>🚨 Mistake Cost Analysis</h3>
+    <span class="chevron">▾</span>
+  </div>
+  <div class="card-body">
+    <div id="mistakeStats" class="mistake-grid"></div>
+  </div>
+</div>
+<template id="mistakeTemplate">
+  <div class="mistake-card">
+    <div class="mistake-title"></div>
+    <div class="mistake-amount"></div>
+    <div class="mistake-trades"></div>
+  </div>
+</template>
+  
 <!-- MONTHLY PERFORMANCE -->
 <div class="card collapsible collapsed">
   <div class="card-header" onclick="toggleSection(this)">
@@ -1768,6 +1787,7 @@ if ("serviceWorker" in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
