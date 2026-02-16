@@ -800,10 +800,57 @@ th,td{
 
 /* INDIVIDUAL BAR HOVER (even stronger) */
 .month .bar:hover {
-
+  transform: scaleY(1.2);
+}
 .tax-box .summary-value {
   color: #b45309;   /* amber */
 }
+
+/* ===========================
+   FORCE MISTAKE CARDS LAYOUT
+=========================== */
+
+#mistakeStats {
+  display: flex !important;
+  gap: 16px !important;
+  flex-wrap: wrap !important;
+}
+
+#mistakeStats .mistake-card {
+  min-width: 180px;
+  padding: 16px;
+  border-radius: 14px;
+  background: #fdecec;
+  border: 1px solid #23beaf;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.22s ease;
+}
+
+#mistakeStats .mistake-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 14px 28px rgba(0,0,0,0.12);
+}
+
+#mistakeStats .mistake-title {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+#mistakeStats .mistake-amount {
+  font-size: 22px;
+  font-weight: 700;
+  color: #dc2626;
+  margin-bottom: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+#mistakeStats .mistake-trades {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
 
 </style>
 </head>
@@ -1050,6 +1097,7 @@ function loadAll(){
       buildCalendar(trades);
       buildLossPie(trades);
       buildMistakeHeatmap(trades);
+      buildMistakeAnalysis(trades);
       buildInstrumentPerformance(trades);
       buildWeekdaySuccessRate(trades);
     };
@@ -1666,6 +1714,48 @@ function openTaxesDrill() {
   };
 }
 
+function buildMistakeAnalysis(trades) {
+  const container = document.getElementById("mistakeStats");
+  const template = document.getElementById("mistakeTemplate");
+  if (!container || !template) return;
+  container.innerHTML = "";
+  // 🔥 MUST match checkbox values EXACTLY
+  const allowedMistakes = [
+    "Stop Loss Hit",
+    "FOMO Entry",
+    "No Stop Loss",
+    "Free Channel with SL",
+    "Target 2 with SL"
+  ];
+
+  const map = {};
+  allowedMistakes.forEach(m => {
+    map[m] = { totalLoss: 0, trades: 0 };
+  });
+  trades.forEach(t => {
+    if (t.isBrokerage) return;
+    if (!t.rules || !t.rules.length) return;
+    t.rules.forEach(rule => {
+      if (map[rule] && t.pnl < 0) {
+        map[rule].totalLoss += Math.abs(t.pnl);
+        map[rule].trades++;
+      }
+    });
+  });
+
+  Object.entries(map).forEach(([mistake, data]) => {
+    if (data.trades === 0) return;
+    const avgLoss = Math.round(data.totalLoss / data.trades);
+    const clone = template.content.cloneNode(true);
+    clone.querySelector(".mistake-title").textContent = mistake;
+    clone.querySelector(".mistake-amount").textContent =
+      "₹" + data.totalLoss.toLocaleString();   // ✅ TOTAL LOSS
+    clone.querySelector(".mistake-trades").textContent =
+      data.trades + " trades • ₹" + avgLoss.toLocaleString() + " / trade";
+    container.appendChild(clone);
+  });
+}
+
 
 function toggleSection(header){
   const card = header.closest(".collapsible");
@@ -1678,6 +1768,7 @@ if ("serviceWorker" in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
