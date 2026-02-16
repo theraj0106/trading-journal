@@ -1763,16 +1763,19 @@ function buildMistakeAnalysis(trades) {
   });
 
   Object.entries(map).forEach(([mistake, data]) => {
-    if (data.trades === 0) return;
-    const avgLoss = Math.round(data.totalLoss / data.trades);
-    const clone = template.content.cloneNode(true);
-    clone.querySelector(".mistake-title").textContent = mistake;
-    clone.querySelector(".mistake-amount").textContent =
-      "₹" + data.totalLoss.toLocaleString();   // ✅ TOTAL LOSS
-    clone.querySelector(".mistake-trades").textContent =
-      data.trades + " trades • ₹" + avgLoss.toLocaleString() + " / trade";
-    container.appendChild(clone);
-  });
+  if (data.trades === 0) return;
+  const totalLoss = data.totalLoss;
+  const perTradeCost = Math.round(totalLoss / data.trades);
+  const clone = template.content.cloneNode(true);
+  clone.querySelector(".mistake-title").textContent = mistake;
+  // 🔥 BIG VALUE = PER TRADE COST
+  clone.querySelector(".mistake-amount").textContent =
+    "₹" + perTradeCost.toLocaleString() + " / trade";
+  // 🔥 META LINE = trades + total loss
+  clone.querySelector(".mistake-trades").textContent =
+    data.trades + " trades • ₹" + totalLoss.toLocaleString();
+  container.appendChild(clone);
+});
 }
 
 
@@ -1787,6 +1790,7 @@ if ("serviceWorker" in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
