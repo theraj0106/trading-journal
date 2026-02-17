@@ -1884,12 +1884,10 @@ function buildWeekdaySuccessRate(trades) {
 function openTaxesDrill() {
 
   const drill = document.getElementById("taxDrill");
-  const body  = document.getElementById("taxDrillBody");
-
-  if (!drill || !body) return;
+  const container = document.getElementById("brokerageAccordion");
 
   drill.classList.remove("hidden");
-  body.innerHTML = "";
+  container.innerHTML = "";
 
   const tx = db.transaction("trades", "readonly");
   const store = tx.objectStore("trades");
@@ -1897,96 +1895,80 @@ function openTaxesDrill() {
 
   req.onsuccess = () => {
 
-    const allTrades = req.result || [];
-
-    // 🔥 Filter only brokerage trades safely
-    const brokerageTrades = allTrades.filter(t =>
-      t &&
-      t.isBrokerage === true &&
-      t.date &&
-      !isNaN(new Date(t.date).getTime())
-    );
+    const brokerageTrades = req.result
+      .filter(t => t.isBrokerage === true)
+      .sort((a,b) => new Date(b.date) - new Date(a.date));
 
     if (!brokerageTrades.length) {
-      body.innerHTML = `
-        <tr>
-          <td colspan="3" style="color:#6b7280;">
-            No brokerage entries
-          </td>
-        </tr>`;
+      container.innerHTML = "<div style='color:#6b7280;padding:12px;'>No brokerage data</div>";
       return;
     }
 
-    // 🔥 Group by month safely
+    // Group by Month
     const monthMap = {};
 
     brokerageTrades.forEach(t => {
-
       const d = new Date(t.date);
+      const key = `${d.getFullYear()}-${d.getMonth()}`;
+      const label = d.toLocaleString("default", { month: "long", year: "numeric" });
 
-      const monthKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
-
-      const monthLabel = d.toLocaleString("default", {
-        month: "long",
-        year: "numeric"
-      });
-
-      if (!monthMap[monthKey]) {
-        monthMap[monthKey] = {
-          label: monthLabel,
+      if (!monthMap[key]) {
+        monthMap[key] = {
+          label,
           total: 0,
           trades: []
         };
       }
 
-      monthMap[monthKey].total += Math.abs(t.pnl);
-      monthMap[monthKey].trades.push(t);
+      monthMap[key].total += Math.abs(t.pnl);
+      monthMap[key].trades.push(t);
     });
 
-    // 🔥 Sort months descending
-    const sortedMonths = Object.entries(monthMap)
-      .sort((a,b) => b[0].localeCompare(a[0]));
+    Object.values(monthMap).forEach((month, index) => {
 
-    // 🔥 Render Accordion
-    sortedMonths.forEach(([key, monthData]) => {
+      const monthDiv = document.createElement("div");
+      monthDiv.className = "brokerage-month";
 
-      // Month header row
-      body.innerHTML += `
-        <tr class="tax-month-row" onclick="toggleTaxMonth('${key}')"
-            style="cursor:pointer; background:#f1f5f9;">
-          <td colspan="3" style="font-weight:600;">
-            ${monthData.label}
-            <span style="float:right; color:#dc2626;">
-              -₹${monthData.total.toLocaleString()}
-            </span>
-          </td>
-        </tr>
+      monthDiv.innerHTML = `
+        <div class="brokerage-header">
+          <div>
+            ${month.label}
+            <span class="brokerage-count">${month.trades.length} entries</span>
+          </div>
+          <div class="brokerage-total">
+            ₹${month.total.toLocaleString()}
+          </div>
+        </div>
+        <div class="brokerage-body"></div>
       `;
 
-      // Hidden detail rows
-      monthData.trades
-        .sort((a,b) => new Date(b.date) - new Date(a.date))
-        .forEach(t => {
+      const body = monthDiv.querySelector(".brokerage-body");
 
-          body.innerHTML += `
-            <tr class="tax-detail tax-${key}" style="display:none;">
-              <td>${t.date}</td>
-              <td class="loss">-₹${Math.abs(t.pnl).toLocaleString()}</td>
-              <td>${t.instrument || "BROKERAGE"}</td>
-            </tr>
-          `;
-        });
+      month.trades.forEach(t => {
+        body.innerHTML += `
+          <div class="brokerage-row">
+            <div>${t.date}</div>
+            <div class="brokerage-amount">-₹${Math.abs(t.pnl).toLocaleString()}</div>
+          </div>
+        `;
+      });
+
+      // Click animation
+      monthDiv.querySelector(".brokerage-header").addEventListener("click", () => {
+        monthDiv.classList.toggle("active");
+      });
+
+      // Auto expand latest month
+      if (index === 0) {
+        monthDiv.classList.add("active");
+      }
+
+      container.appendChild(monthDiv);
     });
 
+    // Smooth scroll to it
+    drill.scrollIntoView({ behavior: "smooth" });
   };
-}
-
-function toggleTaxMonth(key) {
-  const rows = document.querySelectorAll(".tax-" + key);
-  rows.forEach(row => {
-    row.style.display =
-      row.style.display === "none" ? "table-row" : "none";
-  });
 }
 
 
@@ -2174,6 +2156,7 @@ if ("serviceWorker" in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
