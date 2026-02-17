@@ -1897,9 +1897,13 @@ function openTaxesDrill() {
 
     const brokerageTrades = req.result
       .filter(t =>
-        t.isBrokerage === true &&
+        (
+          t.isBrokerage === true ||
+          t.instrument === "BROKERAGE" ||
+          (Array.isArray(t.rules) && t.rules.includes("BROKERAGE"))
+        ) &&
         t.date &&
-        !isNaN(new Date(t.date).getTime())   // ✅ VALID DATE CHECK
+        !isNaN(new Date(t.date).getTime())
       )
       .sort((a,b) => new Date(b.date) - new Date(a.date));
 
@@ -1909,15 +1913,14 @@ function openTaxesDrill() {
       return;
     }
 
-    // ✅ GROUP BY MONTH (FIXED DATE KEY)
     const monthMap = {};
 
     brokerageTrades.forEach(t => {
 
       const d = new Date(t.date);
 
-      // 🔥 FIXED KEY (proper month padding)
-      const monthKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+      const monthKey =
+        `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
 
       const label = d.toLocaleString("default", {
         month: "long",
@@ -1936,7 +1939,6 @@ function openTaxesDrill() {
       monthMap[monthKey].trades.push(t);
     });
 
-    // ✅ SORT MONTHS DESCENDING PROPERLY
     const sortedMonths = Object.entries(monthMap)
       .sort((a,b) => b[0].localeCompare(a[0]));
 
@@ -1963,9 +1965,8 @@ function openTaxesDrill() {
       const body = monthDiv.querySelector(".brokerage-body");
 
       month.trades
-        .sort((a,b) => new Date(b.date) - new Date(a.date))  // ✅ ensure correct order inside month
+        .sort((a,b) => new Date(b.date) - new Date(a.date))
         .forEach(t => {
-
           body.innerHTML += `
             <div class="brokerage-row">
               <div>${t.date}</div>
@@ -1976,13 +1977,11 @@ function openTaxesDrill() {
           `;
         });
 
-      // Click animation
       monthDiv.querySelector(".brokerage-header")
         .addEventListener("click", () => {
           monthDiv.classList.toggle("active");
         });
 
-      // Auto expand latest month
       if (index === 0) {
         monthDiv.classList.add("active");
       }
@@ -1993,6 +1992,7 @@ function openTaxesDrill() {
     drill.scrollIntoView({ behavior: "smooth" });
   };
 }
+
 
 
 function buildMistakeAnalysis(trades) {
@@ -2179,6 +2179,7 @@ if ("serviceWorker" in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
