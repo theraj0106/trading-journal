@@ -893,11 +893,28 @@ th,td{
 .card{
   position: relative;
 }
+
+/* ===== DARK BACKGROUND ===== */
+/* Particle canvas */
+#particles-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: #0f2051;
+}
+.container {
+  position: relative;
+  z-index: 1;
+}
+
 </style>
 </head>
   
 <body>
-  
+<canvas id="particles-bg"></canvas>
 <div class="container">
 <!-- ADD TRADE + PIE -->
 <div class="card">
@@ -1922,12 +1939,110 @@ function toggleSection(header){
   card.classList.toggle("collapsed");
 }
 
+const canvas = document.getElementById("particles-bg");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+window.addEventListener("resize", () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+const mouse = {
+  x: null,
+  y: null,
+  radius: 120
+};
+
+window.addEventListener("mousemove", (e) => {
+  mouse.x = e.x;
+  mouse.y = e.y;
+});
+
+class Particle {
+  constructor() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = Math.random() * 2 + 1;
+    this.speedX = (Math.random() - 1.0) * 1.9;
+    this.speedY = (Math.random() - 1.0) * 1.9;
+  }
+
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+
+    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+
+    // mouse repulse
+    let dx = this.x - mouse.x;
+    let dy = this.y - mouse.y;
+    let distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < mouse.radius) {
+      this.x += dx / 10;
+      this.y += dy / 10;
+    }
+  }
+
+  draw() {
+    ctx.fillStyle = "rgba(35, 190, 175, 0.8)";
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+const particles = [];
+const particleCount = 120;
+
+function initParticles() {
+  for (let i = 0; i < particleCount; i++) {
+    particles.push(new Particle());
+  }
+}
+
+function connectParticles() {
+  for (let a = 0; a < particles.length; a++) {
+    for (let b = a; b < particles.length; b++) {
+      let dx = particles[a].x - particles[b].x;
+      let dy = particles[a].y - particles[b].y;
+      let distance = dx * dx + dy * dy;
+
+      if (distance < 12000) {
+        ctx.strokeStyle = "rgba(35, 190, 175, 0.15)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(particles[a].x, particles[a].y);
+        ctx.lineTo(particles[b].x, particles[b].y);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => {
+    p.update();
+    p.draw();
+  });
+  connectParticles();
+  requestAnimationFrame(animate);
+}
+initParticles();
+animate();
+
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js");
 }
 </script>
 </body>
 </html>
+
 
 
 
