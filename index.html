@@ -1896,35 +1896,51 @@ function openTaxesDrill() {
   req.onsuccess = () => {
 
     const brokerageTrades = req.result
-      .filter(t => t.isBrokerage === true)
+      .filter(t =>
+        t.isBrokerage === true &&
+        t.date &&
+        !isNaN(new Date(t.date).getTime())   // ✅ VALID DATE CHECK
+      )
       .sort((a,b) => new Date(b.date) - new Date(a.date));
 
     if (!brokerageTrades.length) {
-      container.innerHTML = "<div style='color:#6b7280;padding:12px;'>No brokerage data</div>";
+      container.innerHTML =
+        "<div style='color:#6b7280;padding:12px;'>No brokerage data</div>";
       return;
     }
 
-    // Group by Month
+    // ✅ GROUP BY MONTH (FIXED DATE KEY)
     const monthMap = {};
 
     brokerageTrades.forEach(t => {
-      const d = new Date(t.date);
-      const key = `${d.getFullYear()}-${d.getMonth()}`;
-      const label = d.toLocaleString("default", { month: "long", year: "numeric" });
 
-      if (!monthMap[key]) {
-        monthMap[key] = {
+      const d = new Date(t.date);
+
+      // 🔥 FIXED KEY (proper month padding)
+      const monthKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+
+      const label = d.toLocaleString("default", {
+        month: "long",
+        year: "numeric"
+      });
+
+      if (!monthMap[monthKey]) {
+        monthMap[monthKey] = {
           label,
           total: 0,
           trades: []
         };
       }
 
-      monthMap[key].total += Math.abs(t.pnl);
-      monthMap[key].trades.push(t);
+      monthMap[monthKey].total += Math.abs(t.pnl);
+      monthMap[monthKey].trades.push(t);
     });
 
-    Object.values(monthMap).forEach((month, index) => {
+    // ✅ SORT MONTHS DESCENDING PROPERLY
+    const sortedMonths = Object.entries(monthMap)
+      .sort((a,b) => b[0].localeCompare(a[0]));
+
+    sortedMonths.forEach(([key, month], index) => {
 
       const monthDiv = document.createElement("div");
       monthDiv.className = "brokerage-month";
@@ -1933,7 +1949,9 @@ function openTaxesDrill() {
         <div class="brokerage-header">
           <div>
             ${month.label}
-            <span class="brokerage-count">${month.trades.length} entries</span>
+            <span class="brokerage-count">
+              ${month.trades.length} entries
+            </span>
           </div>
           <div class="brokerage-total">
             ₹${month.total.toLocaleString()}
@@ -1944,19 +1962,25 @@ function openTaxesDrill() {
 
       const body = monthDiv.querySelector(".brokerage-body");
 
-      month.trades.forEach(t => {
-        body.innerHTML += `
-          <div class="brokerage-row">
-            <div>${t.date}</div>
-            <div class="brokerage-amount">-₹${Math.abs(t.pnl).toLocaleString()}</div>
-          </div>
-        `;
-      });
+      month.trades
+        .sort((a,b) => new Date(b.date) - new Date(a.date))  // ✅ ensure correct order inside month
+        .forEach(t => {
+
+          body.innerHTML += `
+            <div class="brokerage-row">
+              <div>${t.date}</div>
+              <div class="brokerage-amount">
+                -₹${Math.abs(t.pnl).toLocaleString()}
+              </div>
+            </div>
+          `;
+        });
 
       // Click animation
-      monthDiv.querySelector(".brokerage-header").addEventListener("click", () => {
-        monthDiv.classList.toggle("active");
-      });
+      monthDiv.querySelector(".brokerage-header")
+        .addEventListener("click", () => {
+          monthDiv.classList.toggle("active");
+        });
 
       // Auto expand latest month
       if (index === 0) {
@@ -1966,7 +1990,6 @@ function openTaxesDrill() {
       container.appendChild(monthDiv);
     });
 
-    // Smooth scroll to it
     drill.scrollIntoView({ behavior: "smooth" });
   };
 }
@@ -2156,6 +2179,7 @@ if ("serviceWorker" in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
