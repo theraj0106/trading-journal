@@ -866,7 +866,7 @@ th,td{
   text-align: center;
   font-size: 15px;
   font-weight: 500;
-  margin-bottom: 12px;
+  margin-bottom: 25px;
   color: #374151;
 }
 .calendar-summary strong {
@@ -878,7 +878,21 @@ th,td{
 .calendar-summary.loss {
   color: #dc2626;
 }
-
+.calendar-header{
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card h3 + .calendar-header,
+.card .calendar-header{
+  position: absolute;
+}
+.card{
+  position: relative;
+}
 </style>
 </head>
   
@@ -1914,6 +1928,7 @@ if ("serviceWorker" in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
