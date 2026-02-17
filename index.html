@@ -862,6 +862,22 @@ th,td{
   border-radius:20px;
   font-weight:600;
 }
+.calendar-summary {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: #374151;
+}
+.calendar-summary strong {
+  font-weight: 700;
+}
+.calendar-summary.profit {
+  color: #16a34a;
+}
+.calendar-summary.loss {
+  color: #dc2626;
+}
 
 </style>
 </head>
@@ -1020,6 +1036,7 @@ th,td{
 <!-- CALENDAR -->
 <div class="card">
 <h3>📅 Calendar</h3>
+<div id="calendarSummary" class="calendar-summary"></div>
 <div class="calendar-header">
   <button onclick="changeMonth(-1)">◀</button>
   <span id="calendarTitle"></span>
@@ -1197,31 +1214,92 @@ function updateSummary(trades){
 
     
 /* CALENDAR */
+
 function buildCalendar(t){
- const streakMap = calculateWinningStreaks(t);
+
  calendar.innerHTML = "";
+const streakMap = calculateWinningStreaks(t);
+
  const y = currentYear;
  const m = currentMonth;
+
 document.getElementById("calendarTitle").innerText =
   new Date(y, m).toLocaleString("default", {
     month: "long",
     year: "numeric"
-  });
+  });	
+
   const first = new Date(y, m, 1).getDay() || 7;
   const days  = new Date(y, m + 1, 0).getDate();
   const map = {};
+
   t.forEach(x => {
     map[x.date] = (map[x.date] || []).concat(x);
   });
 
+  /* ============================
+     🔥 PROFITABLE DAYS SUMMARY
+     ============================ */
+
+  let profitableDays = 0;
+  let tradedDays = 0;
+
+  Object.entries(map).forEach(([date, list]) => {
+
+    const d = new Date(date);
+    if (d.getFullYear() !== y || d.getMonth() !== m) return;
+
+    let dailyNet = 0;
+    let hasTrade = false;
+
+    list.forEach(x => {
+      if (!x.isBrokerage) {
+        dailyNet += x.pnl;
+        hasTrade = true;
+      }
+    });
+
+    if (hasTrade) {
+      tradedDays++;
+      if (dailyNet > 0) profitableDays++;
+    }
+  });
+
+  const summaryEl = document.getElementById("calendarSummary");
+
+  if (summaryEl) {
+    if (tradedDays === 0) {
+      summaryEl.innerHTML = "";
+    } else {
+      const percent = Math.round((profitableDays / tradedDays) * 100);
+
+      summaryEl.className = "calendar-summary " +
+        (profitableDays >= tradedDays / 2 ? "profit" : "loss");
+
+      summaryEl.innerHTML = `
+        🔥 You are Profitable for 
+        <strong>${profitableDays} / ${tradedDays}</strong> 
+        Traded Days (${percent}%)
+      `;
+    }
+  }
+
+  /* ============================
+     CALENDAR RENDERING
+     ============================ */
+
   ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
     .forEach(h => calendar.innerHTML += `<div class="day-header">${h}</div>`);
+
   for (let i = 1; i < first; i++) {
     calendar.innerHTML += `<div></div>`;
   }
+
   for (let i = 1; i <= days; i++) {
+
     const ds = `${y}-${String(m+1).padStart(2,"0")}-${String(i).padStart(2,"0")}`;
     const list = map[ds] || [];
+
     if (list.length === 0) {
       calendar.innerHTML += `
         <div class="day neutral">
@@ -1230,19 +1308,21 @@ document.getElementById("calendarTitle").innerText =
         </div>`;
       continue;
     }
+
     let pnl = 0, wins = 0, losses = 0;
-    
+
     list.forEach(x => {
-    if (x.isBrokerage) return;
-    pnl += x.pnl;
-    if (x.pnl > 0) wins++;
-    if (x.pnl < 0) losses++;
+      if (x.isBrokerage) return;
+      pnl += x.pnl;
+      if (x.pnl > 0) wins++;
+      if (x.pnl < 0) losses++;
     });
+
     const colorClass = pnl >= 0 ? "green" : "red";
 
     calendar.innerHTML += `
       <div class="day ${colorClass}" onclick="openDay('${ds}')">
-      ${streakMap[ds] ? `<div class="streak-badge">🔥${streakMap[ds]}</div>` : ""}
+        ${streakMap[ds] ? `<div class="streak-badge">🔥${streakMap[ds]}</div>` : ""}
         <div class="day-date">${i}</div>
         <div class="day-pnl">₹${pnl}</div>
         <div class="day-details">
@@ -1252,6 +1332,7 @@ document.getElementById("calendarTitle").innerText =
       </div>`;
   }
 }
+
 
 function buildMonthlyPerformance(trades){
   const grid = document.getElementById("monthlyGrid");
@@ -1833,6 +1914,7 @@ if ("serviceWorker" in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
