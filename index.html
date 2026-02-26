@@ -1969,18 +1969,18 @@ function openTaxesDrill() {
 
       const body = monthDiv.querySelector(".brokerage-body");
 
-      month.trades
-        .sort((a,b) => new Date(b.date) - new Date(a.date))
-        .forEach(t => {
-          body.innerHTML += `
-            <div class="brokerage-row">
-              <div>${t.date}</div>
-              <div class="brokerage-amount">
-                -₹${Math.abs(t.pnl).toLocaleString()}
-              </div>
-            </div>
-          `;
-        });
+      month.trades.forEach(t => {
+      const row = document.createElement("div");
+      row.className = "brokerage-row";
+      const dateDiv = document.createElement("div");
+      dateDiv.textContent = t.date;
+      const amountDiv = document.createElement("div");
+      amountDiv.className = "brokerage-amount";
+      amountDiv.textContent = "-₹" + Math.abs(t.pnl).toLocaleString();
+      row.appendChild(dateDiv);
+      row.appendChild(amountDiv);
+      body.appendChild(row);
+});
 
       monthDiv.querySelector(".brokerage-header")
         .addEventListener("click", () => {
@@ -2184,6 +2184,7 @@ if ("serviceWorker" in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
