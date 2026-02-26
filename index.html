@@ -1525,7 +1525,12 @@ function openDay(selectedDate) {
   const req = store.getAll();
 
   req.onsuccess = () => {
-
+    console.log(
+  req.result.filter(t =>
+    t.instrument === "BROKERAGE" ||
+    t.isBrokerage === true
+  )
+);
     const filtered = req.result
       .filter(t => t.date === selectedDate)
       .filter(t => !t.isBrokerage);   // 🔥 remove brokerage here
@@ -2179,6 +2184,7 @@ if ("serviceWorker" in navigator) {
 </script>
 </body>
 </html>
+
 
 
 
